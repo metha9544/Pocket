@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PukPik Pocket v5.2</title>
+    <title>PukPik Pocket v5.3</title>
     <style>
         :root {
             --bg-color: #f7f9fc;
@@ -51,20 +51,19 @@
         }
         button, input { font: inherit; }
         button { touch-action: manipulation; }
-      .phone-container {
-    width: 100%;
-    max-width: 430px;
-    height: min(94svh, 900px);
-    background: var(--card-bg);
-    border-radius: 34px;
-    box-shadow: var(--shadow);
-    border: 6px solid rgba(255,255,255,0.95);
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    position: relative;
-}
+        .phone-container {
+            width: 100%;
+            max-width: 430px;
+            height: min(94svh, 900px);
+            background: var(--card-bg);
+            border-radius: 34px;
+            box-shadow: var(--shadow);
+            border: 6px solid rgba(255,255,255,0.95);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
         .mini-banner {
             background: linear-gradient(135deg, #fff0f0 0%, #fcedeb 100%);
             padding: 12px 16px;
@@ -73,6 +72,7 @@
             justify-content: space-between;
             gap: 10px;
             border-bottom: 1px dashed #eee;
+            flex-shrink: 0;
         }
         .banner-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
         .mascot-mini { font-size: 28px; animation: bounce 2s infinite alternate; }
@@ -109,11 +109,17 @@
         .banner-budget-badge.danger { background: #ffb7b2; }
         .banner-budget-label { font-size: 10px; font-weight: 700; color: #5a5a5a; }
         .banner-budget-amount { font-size: 16px; font-weight: 800; color: #333; }
-        .overall-summary-card { background: #fafbfc; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
-        .mini-banner,
-.overall-summary-card {
-    flex-shrink: 0;
-}
+        .overall-summary-card {
+            background: #fafbfc;
+            padding: 10px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+            max-height: 245px;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .overall-summary-card::-webkit-scrollbar { display: none; }
         .summary-total-row, .wallet-summary-row, .system-action-row { display: flex; gap: 7px; }
         .summary-total-row { margin-bottom: 8px; }
         .summary-box {
@@ -126,10 +132,17 @@
         }
         .summary-box.inc { background-color: #e8f8f2; color: #2b5144; border: 1px solid var(--success); }
         .summary-box.exp { background-color: #fff0f0; color: #5c2724; border: 1px solid var(--primary); }
-        .wallet-summary-row { margin-bottom: 7px; flex-wrap: wrap; }
+        .wallet-summary-row {
+            margin-bottom: 7px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .wallet-summary-row::-webkit-scrollbar { display: none; }
         .wallet-box {
-            flex: 1;
-            min-width: 80px;
+            flex: 0 0 120px;
+            min-width: 120px;
             padding: 7px 6px;
             border-radius: 12px;
             font-size: 10px;
@@ -143,7 +156,7 @@
         .wallet-box.bank { background-color: #eef2f7; color: #2c3e50; border: 1px solid var(--accent-blue); }
         .wallet-box.cash { background-color: #fdfaf2; color: #7d6608; border: 1px solid var(--danger); }
         .wallet-box.custom-wallet { background-color: #f2fcf9; color: #117a65; border: 1px solid var(--success-dark); }
-        .wallet-box.total { background-color: #f5eef8; color: #6c3483; border: 1px solid #d2b4de; width: 100%; flex: 1 1 100%; margin-top: 4px; }
+        .wallet-box.total { background-color: #f5eef8; color: #6c3483; border: 1px solid #d2b4de; flex: 0 0 140px; width: auto; margin-top: 0; }
         .wallet-val { font-size: 12px; margin-top: 2px; word-break: break-word; }
         .credit-summary-row {
             background: var(--purple-soft);
@@ -166,6 +179,7 @@
             padding-bottom: 4px;
             margin-bottom: 7px;
             scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
         }
         .credit-cards-breakdown-zone::-webkit-scrollbar, .category-summary-grid::-webkit-scrollbar { height: 0; }
         .credit-card-mini-badge, .cat-summary-mini-box {
@@ -180,6 +194,7 @@
             gap: 4px;
         }
         .credit-card-mini-badge { color: #6c4f93; border-color: #d6c7e8; }
+        .cat-summary-title { font-size: 11px; font-weight: 800; color: #6b7280; margin: 5px 0 4px; }
         .system-action-row { margin: 6px 0 10px; }
         .sys-btn {
             flex: 1;
@@ -193,10 +208,13 @@
             color: #5a5a5a;
         }
         .sys-btn:active { transform: scale(.98); background: #f0f0f0; }
-      .app-body {
-    flex: none;
-    overflow: visible;
-    padding: 12px 16px 82px;
+        .app-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 16px 82px;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .calendar-title { font-size: 15px; font-weight: 800; }
         .calendar-btn { background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 16px; cursor: pointer; padding: 3px 8px; }
@@ -214,7 +232,7 @@
         .day-cell {
             background: #fff;
             border-radius: 11px;
-            min-height: 47px;
+            min-height: 48px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -339,6 +357,7 @@
             body { padding: 0; }
             .category-grid { grid-template-columns: repeat(3, 1fr); }
             .banner-speech { max-width: 130px; }
+            .overall-summary-card { max-height: 230px; }
         }
     </style>
 </head>
@@ -360,9 +379,9 @@
                 <div class="summary-box exp">📤 จ่ายรวมเดือนนี้:<br><span id="totalExpenseText">0</span> ฿</div>
             </div>
             <div class="wallet-summary-row" id="walletSummaryRowZone">
-                <div class="wallet-box bank"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val" id="totalBankText">0.00</span></div>
-                <div class="wallet-box cash"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val" id="totalCashText">0.00</span></div>
-                <div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val" id="totalCombinedText">0.00</span></div>
+                <div class="wallet-box bank"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val">0.00</span></div>
+                <div class="wallet-box cash"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val">0.00</span></div>
+                <div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val">0.00</span></div>
             </div>
             <div class="credit-summary-row">
                 <span>💳 ยอดใช้บัตรเครดิตเดือนนี้:</span>
@@ -460,24 +479,18 @@
         const STORAGE_OLD_DB = 'pukpik_db_v4';
         const STORAGE_CARDS = 'pukpik_cards';
         const STORAGE_CATEGORIES = 'pukpik_categories';
-        const STORAGE_WALLETS = 'pukpik_wallets'; // เพิ่มสำหรับเก็บกระเป๋าใหม่ๆ
-        
+        const STORAGE_WALLETS = 'pukpik_wallets';
         let currentDate = new Date();
         let selectedDateKey = formatDateKey(new Date());
         let currentType = 'expense';
         let selectedPaymentSource = 'bank';
-        
-        // ตัวแปรเก็บคู่ต้นทาง-ปลายทางของการโยกย้ายเงิน
         let transferFromSource = 'bank';
         let transferToSource = 'cash';
-        
         let selectedCategory = '';
         let editingTransactionId = null;
         let editingDateKey = null;
-        
         const defaultCreditCards = ['เฟิร์สช้อยส์', 'อิออน M GEN'];
-        const defaultCustomWallets = []; // โครงสร้างเริ่มต้นสำหรับกระเป๋าเงินเสริม
-        
+        const defaultCustomWallets = [];
         const defaultCategories = {
             expense: [
                 { id: 'food', name: 'อาหาร', icon: '🍜' },
@@ -493,88 +506,76 @@
                 { id: 'other_inc', name: 'อื่นๆ', icon: '🪙' }
             ]
         };
-        
         let db = loadJSON(STORAGE_DB, null);
         if (!db) db = loadJSON(STORAGE_OLD_DB, {});
         let creditCards = loadJSON(STORAGE_CARDS, defaultCreditCards);
         let customCategories = loadJSON(STORAGE_CATEGORIES, defaultCategories);
         let customWallets = loadJSON(STORAGE_WALLETS, defaultCustomWallets);
-        
         const monthNamesThai = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
         const $ = (id) => document.getElementById(id);
         const calendarGrid = $('calendarGrid');
         const weekdaysTemplate = ['อา','จ','อ','พ','พฤ','ศ','ส'];
-        
         document.addEventListener('DOMContentLoaded', () => {
             normalizeData();
             initApp();
             setupEventListeners();
         });
-        
         function loadJSON(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
                 return raw ? JSON.parse(raw) : fallback;
             } catch { return fallback; }
         }
-        
         function saveAll() {
             localStorage.setItem(STORAGE_DB, JSON.stringify(db));
             localStorage.setItem(STORAGE_CARDS, JSON.stringify(creditCards));
             localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(customCategories));
             localStorage.setItem(STORAGE_WALLETS, JSON.stringify(customWallets));
         }
-        
         function normalizeData() {
-    if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
-    if (!customCategories.income) customCategories.income = defaultCategories.income;
-    if (!Array.isArray(creditCards)) creditCards = [...defaultCreditCards];
-    if (!Array.isArray(customWallets)) customWallets = [];
-
-    Object.keys(db || {}).forEach(dateKey => {
-        if (!Array.isArray(db[dateKey])) {
-            delete db[dateKey];
-        } else {
-            db[dateKey] = db[dateKey].map(item => {
-                let transferFrom = item.transferFrom || '';
-                let transferTo = item.transferTo || '';
-
-                if (item.type === 'transfer' && !transferFrom && !transferTo) {
-                    if (item.transferDirection === 'cash_to_bank') {
-                        transferFrom = 'cash';
-                        transferTo = 'bank';
-                    } else {
-                        transferFrom = 'bank';
-                        transferTo = 'cash';
-                    }
+            if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
+            if (!customCategories.income) customCategories.income = defaultCategories.income;
+            if (!Array.isArray(creditCards)) creditCards = [...defaultCreditCards];
+            if (!Array.isArray(customWallets)) customWallets = [];
+            Object.keys(db || {}).forEach(dateKey => {
+                if (!Array.isArray(db[dateKey])) {
+                    delete db[dateKey];
+                } else {
+                    db[dateKey] = db[dateKey].map(item => {
+                        let transferFrom = item.transferFrom || '';
+                        let transferTo = item.transferTo || '';
+                        if (item.type === 'transfer' && (!transferFrom || !transferTo)) {
+                            if (item.transferDirection === 'cash_to_bank') {
+                                transferFrom = 'cash';
+                                transferTo = 'bank';
+                            } else {
+                                transferFrom = 'bank';
+                                transferTo = 'cash';
+                            }
+                        }
+                        return {
+                            id: item.id || Date.now() + Math.random(),
+                            type: item.type || 'expense',
+                            amount: Number(item.amount) || 0,
+                            note: String(item.note || ''),
+                            category: item.category || '',
+                            time: item.time || '00:00',
+                            skipBudget: Boolean(item.skipBudget),
+                            source: item.type === 'transfer' ? '' : (item.source || 'bank'),
+                            transferFrom,
+                            transferTo
+                        };
+                    }).filter(item => item.amount > 0);
                 }
-
-                return {
-                    id: item.id || Date.now() + Math.random(),
-                    type: item.type || 'expense',
-                    amount: Number(item.amount) || 0,
-                    note: String(item.note || ''),
-                    category: item.category || '',
-                    time: item.time || '00:00',
-                    skipBudget: Boolean(item.skipBudget),
-                    source: item.type === 'transfer' ? '' : (item.source || 'bank'),
-                    transferFrom,
-                    transferTo
-                };
-            }).filter(item => item.amount > 0);
+            });
+            saveAll();
         }
-    });
-
-    saveAll();
-        }
-
         function initApp() {
             renderCalendar();
             renderHistory(selectedDateKey);
             updateRealtimeDashboard();
             renderOverallAndCategorySummary();
         }
-        
         function setupEventListeners() {
             $('openModalBtn').addEventListener('click', () => {
                 resetForm();
@@ -596,62 +597,61 @@
             });
             $('saveTransactionBtn').addEventListener('click', handleSaveTransaction);
         }
-        
         function closeModal() { $('modalOverlay').classList.remove('show'); }
-        
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
         }
-        
         function money(value, min = 0) {
             return Number(value || 0).toLocaleString('th-TH', { minimumFractionDigits: min, maximumFractionDigits: 2 });
         }
-        
         function parseDateKey(key) {
             const [y, m, d] = key.split('-').map(Number);
             return new Date(y, m - 1, d);
         }
-        
         function formatDateKey(date) {
             const y = date.getFullYear();
             const m = String(date.getMonth() + 1).padStart(2, '0');
             const d = String(date.getDate()).padStart(2, '0');
             return `${y}-${m}-${d}`;
         }
-        
         function isSameMonthKey(dateKey, dateObj) {
             const d = parseDateKey(dateKey);
             return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth();
         }
-        
+        function getWalletName(src) {
+            if (src === 'bank') return '🏦 บัญชี';
+            if (src === 'cash') return '💵 เงินสด';
+            if (String(src).startsWith('credit_')) return `💳 บัตร:${String(src).replace('credit_', '')}`;
+            if (String(src).startsWith('wallet_')) {
+                const wId = String(src).replace('wallet_', '');
+                const found = customWallets.find(w => String(w.id) === String(wId));
+                return found ? `📦 ${found.name}` : '📦 กระเป๋าเสริม';
+            }
+            return 'กระเป๋า';
+        }
         function renderWalletButtons() {
             const container = $('walletButtonsContainer');
             container.innerHTML = '';
-            
             if (currentType === 'expense') {
                 $('walletZoneLabel').innerText = 'จ่ายด้วยกระเป๋าหรือบัตรเครดิตไหน?';
                 addWalletButton('🏦 บัญชีธนาคาร', 'bank');
                 addWalletButton('💵 เงินสดในมือ', 'cash');
                 customWallets.forEach(w => addWalletButton(`📦 ${w.name}`, `wallet_${w.id}`));
                 creditCards.forEach(card => addWalletButton(`💳 ${card}`, `credit_${card}`, true));
-                
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
                 addBtn.className = 'add-manage-btn';
                 addBtn.innerText = '➕ เพิ่มบัตรเครดิต';
                 addBtn.onclick = addNewCreditCard;
                 container.appendChild(addBtn);
-                
             } else if (currentType === 'income') {
                 $('walletZoneLabel').innerText = 'รับเงินเข้ากระเป๋าหรือดึงจากบัตรไหน?';
                 addWalletButton('🏦 บัญชีธนาคาร', 'bank');
                 addWalletButton('💵 เงินสดในมือ', 'cash');
                 customWallets.forEach(w => addWalletButton(`📦 ${w.name}`, `wallet_${w.id}`));
-                // รายรับสามารถเลือกดึงยอดจากบัตรเครดิตได้ตามคำขอ!
                 creditCards.forEach(card => addWalletButton(`💳 ${card}`, `credit_${card}`, true));
             }
         }
-        
         function addWalletButton(label, source, isCredit = false) {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -660,30 +660,23 @@
             btn.onclick = () => { selectedPaymentSource = source; renderWalletButtons(); };
             $('walletButtonsContainer').appendChild(btn);
         }
-        
-        // ฟังก์ชันวาดปุ่มเลือกกระเป๋าในโหมด โยกย้ายเงิน (ต้นทาง / ปลายทาง)
         function renderTransferDirectionWallets() {
             const fromContainer = $('transferFromContainer');
             const toContainer = $('transferToContainer');
             fromContainer.innerHTML = '';
             toContainer.innerHTML = '';
-            
             const list = [
                 { id: 'bank', name: '🏦 บัญชี' },
                 { id: 'cash', name: '💵 เงินสด' },
                 ...customWallets.map(w => ({ id: `wallet_${w.id}`, name: `📦 ${w.name}` }))
             ];
-            
             list.forEach(w => {
-                // ปุ่มฝั่งต้นทาง
                 const btnFrom = document.createElement('button');
                 btnFrom.type = 'button';
                 btnFrom.className = `wallet-select-btn transfer-style ${transferFromSource === w.id ? 'active' : ''}`;
                 btnFrom.innerText = w.name;
                 btnFrom.onclick = () => { transferFromSource = w.id; renderTransferDirectionWallets(); };
                 fromContainer.appendChild(btnFrom);
-                
-                // ปุ่มฝั่งปลายทาง
                 const btnTo = document.createElement('button');
                 btnTo.type = 'button';
                 btnTo.className = `wallet-select-btn transfer-style ${transferToSource === w.id ? 'active' : ''}`;
@@ -692,7 +685,6 @@
                 toContainer.appendChild(btnTo);
             });
         }
-        
         function addNewCreditCard() {
             const cardName = prompt('กรอกชื่อบัตรเครดิตใหม่ค๊าบ:');
             const clean = cardName ? cardName.trim() : '';
@@ -704,10 +696,8 @@
             renderWalletButtons();
             renderOverallAndCategorySummary();
         }
-        
-        // ฟังก์ชันสร้างกระเป๋าเงินเสริมใบใหม่ (เช่น TrueWallet, บัญชีออมทรัพย์อื่นๆ) สำหรับโยกย้ายเงิน
         function addNewCustomWallet() {
-            const name = prompt('กรอกชื่อกระเป๋าหรือบัญชีเสริมใหม่ค๊าบ (เช่น วอลเล็ท, ออมทรัพย์):');
+            const name = prompt('กรอกชื่อกระเป๋าหรือบัญชีเสริมใหม่ค๊าบ เช่น วอลเล็ท, ออมทรัพย์:');
             const clean = name ? name.trim() : '';
             if (!clean) return;
             if (clean === 'บัญชี' || clean === 'เงินสด' || customWallets.some(w => w.name === clean)) {
@@ -720,7 +710,6 @@
             renderTransferDirectionWallets();
             renderOverallAndCategorySummary();
         }
-        
         function addNewCategory() {
             if (currentType === 'transfer') return;
             const typeText = currentType === 'expense' ? 'รายจ่าย' : 'รายรับ';
@@ -735,7 +724,6 @@
             renderFormCategories();
             renderOverallAndCategorySummary();
         }
-        
         function switchFormTypeElements() {
             if (currentType === 'transfer') {
                 $('walletSelectorZone').style.display = 'none';
@@ -751,7 +739,6 @@
                 renderWalletButtons();
             }
         }
-        
         function getDaySummary(dateKey) {
             const list = db[dateKey] || [];
             let income = 0, expense = 0, budgetAffectingExpense = 0;
@@ -766,7 +753,6 @@
             });
             return { income, expense, budgetAffectingExpense, balance: DAILY_BUDGET_LIMIT - budgetAffectingExpense };
         }
-        
         function updateRealtimeDashboard() {
             const summary = getDaySummary(formatDateKey(new Date()));
             const remaining = summary.balance;
@@ -774,7 +760,7 @@
             const badge = $('budgetBadgeColor');
             badge.className = 'banner-budget-badge';
             if (remaining >= 70) {
-                $('budgetText').innerText = 'งบกินวันนี้เหลือ';
+                $('budgetText').innerText = 'งบวันนี้เหลือ';
                 $('mascotEmoji').innerText = '🐻';
                 $('mascotSpeech').innerText = 'เก่งมาก ประหยัดสุดๆ!';
             } else if (remaining > 0) {
@@ -789,38 +775,29 @@
                 $('mascotSpeech').innerText = 'พรุ่งนี้เอาใหม่ได้ค๊าบ';
             }
         }
-        
         function renderOverallAndCategorySummary() {
             let monthIncome = 0, monthExpense = 0, monthCredit = 0;
-            
-            // ใช้ Object ในการคำนวณยอดเงินคงเหลือของแต่ละกระเป๋า เพื่อให้ยืดหยุ่นตามจำนวนกระเป๋าที่เพิ่มขึ้น
             const walletBalances = { bank: 0, cash: 0 };
             customWallets.forEach(w => walletBalances[`wallet_${w.id}`] = 0);
-            
             const expenseCatTotals = {};
             const incomeCatTotals = {};
             const cardBreakdownTotals = {};
             creditCards.forEach(c => cardBreakdownTotals[c] = 0);
-            
             Object.keys(db).forEach(dateKey => {
                 const inCurrentMonth = isSameMonthKey(dateKey, currentDate);
                 (db[dateKey] || []).forEach(item => {
                     const amount = Number(item.amount) || 0;
                     const source = item.source || 'bank';
-                    
                     if (item.type === 'income') {
                         if (source.startsWith('credit_')) {
-                            // ถ้ารายรับดึงมาจากบัตรเครดิต ยอดใช้บัตรจะเพิ่มขึ้น (เสมือนมียอดค้างชำระเพิ่มขึ้น)
                             const cardName = source.replace('credit_', '');
                             if (inCurrentMonth) {
                                 monthCredit += amount;
                                 cardBreakdownTotals[cardName] = (cardBreakdownTotals[cardName] || 0) + amount;
                             }
-                        } else {
-                            // รับเงินเข้ากระเป๋าปกติ
-                            if (walletBalances[source] !== undefined) walletBalances[source] += amount;
+                        } else if (walletBalances[source] !== undefined) {
+                            walletBalances[source] += amount;
                         }
-                        
                         if (inCurrentMonth) {
                             monthIncome += amount;
                             incomeCatTotals[item.category] = (incomeCatTotals[item.category] || 0) + amount;
@@ -832,15 +809,14 @@
                                 monthCredit += amount;
                                 cardBreakdownTotals[cardName] = (cardBreakdownTotals[cardName] || 0) + amount;
                             }
-                        } else {
-                            if (walletBalances[source] !== undefined) walletBalances[source] -= amount;
+                        } else if (walletBalances[source] !== undefined) {
+                            walletBalances[source] -= amount;
                         }
                         if (inCurrentMonth) {
                             monthExpense += amount;
                             expenseCatTotals[item.category] = (expenseCatTotals[item.category] || 0) + amount;
                         }
                     } else if (item.type === 'transfer') {
-                        // การโอนเงินข้ามบัญชี
                         const from = item.transferFrom || 'bank';
                         const to = item.transferTo || 'cash';
                         if (walletBalances[from] !== undefined) walletBalances[from] -= amount;
@@ -848,32 +824,21 @@
                     }
                 });
             });
-            
-            // อัปเดต UI ยอดเงินรวมหน้าหลักแบบไดนามิกตามกระเป๋าเงินที่มีอยู่
             const summaryRowZone = $('walletSummaryRowZone');
             summaryRowZone.innerHTML = `
                 <div class="wallet-box bank"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val">${money(walletBalances.bank, 2)}</span></div>
                 <div class="wallet-box cash"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val">${money(walletBalances.cash, 2)}</span></div>
             `;
-            
-            // แตกกระเป๋าเสริมอื่นๆ ออกมาโชว์ที่ Dashboard หลักอัตโนมัติ
             let combinedTotal = walletBalances.bank + walletBalances.cash;
             customWallets.forEach(w => {
                 const bal = walletBalances[`wallet_${w.id}`] || 0;
                 combinedTotal += bal;
-                summaryRowZone.innerHTML += `
-                    <div class="wallet-box custom-wallet"><span>📦 ${escapeHTML(w.name)}</span><span class="wallet-val">${money(bal, 2)}</span></div>
-                `;
+                summaryRowZone.innerHTML += `<div class="wallet-box custom-wallet"><span>📦 ${escapeHTML(w.name)}</span><span class="wallet-val">${money(bal, 2)}</span></div>`;
             });
-            
-            summaryRowZone.innerHTML += `
-                <div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val">${money(combinedTotal, 2)}</span></div>
-            `;
-            
+            summaryRowZone.innerHTML += `<div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val">${money(combinedTotal, 2)}</span></div>`;
             $('totalIncomeText').innerText = money(monthIncome);
             $('totalExpenseText').innerText = money(monthExpense);
             $('totalCreditText').innerText = money(monthCredit, 2);
-            
             const creditZone = $('creditCardsBreakdownZone');
             creditZone.innerHTML = '';
             let hasCardRecord = false;
@@ -887,7 +852,6 @@
                 }
             });
             if (!hasCardRecord) creditZone.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:2px 4px">💳 ยังไม่มียอดรูดบัตรในเดือนนี้ค๊าบ</div>';
-            
             const incomeCatZone = $('incomeCategorySummaryGrid');
             incomeCatZone.innerHTML = '';
             customCategories.income.forEach(cat => {
@@ -898,10 +862,7 @@
                 box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
                 incomeCatZone.appendChild(box);
             });
-            if(!incomeCatZone.children.length){
-                incomeCatZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">💰 ยังไม่มีรายการรายรับในเดือนนี้ค๊าบ</div>';
-            }
-            
+            if(!incomeCatZone.children.length) incomeCatZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">💰 ยังไม่มีรายการรายรับในเดือนนี้ค๊าบ</div>';
             const catZone = $('categorySummaryGrid');
             catZone.innerHTML = '';
             customCategories.expense.forEach(cat => {
@@ -912,11 +873,8 @@
                 box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
                 catZone.appendChild(box);
             });
-            if(!catZone.children.length){
-                catZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">📤 ยังไม่มีรายการรายจ่ายในเดือนนี้ค๊าบ</div>';
-            }
+            if(!catZone.children.length) catZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">📤 ยังไม่มีรายการรายจ่ายในเดือนนี้ค๊าบ</div>';
         }
-        
         function renderCalendar() {
             calendarGrid.innerHTML = weekdaysTemplate.map(w => `<div class="weekday">${w}</div>`).join('');
             const year = currentDate.getFullYear();
@@ -946,19 +904,16 @@
                 calendarGrid.appendChild(cell);
             }
         }
-        
         function changeMonth(direction) {
             currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1);
             renderCalendar();
             renderOverallAndCategorySummary();
         }
-        
         function goToday() {
             currentDate = new Date();
             selectedDateKey = formatDateKey(new Date());
             initApp();
         }
-        
         function renderHistory(dateKey) {
             const items = db[dateKey] || [];
             const summary = getDaySummary(dateKey);
@@ -971,19 +926,6 @@
                 list.innerHTML = '<div class="empty-state">ยังไม่มีรายการของวันนี้ค๊าบ 📭</div>';
                 return;
             }
-            
-            const getWalletName = (src) => {
-                if (src === 'bank') return '🏦 บัญชี';
-                if (src === 'cash') return '💵 เงินสด';
-                if (src.startsWith('credit_')) return `💳 บัตร:${src.replace('credit_', '')}`;
-                if (src.startsWith('wallet_')) {
-                    const wId = src.replace('wallet_', '');
-                    const found = customWallets.find(w => String(w.id) === String(wId));
-                    return found ? `📦 ${found.name}` : '📦 กระเป๋าเสริม';
-                }
-                return 'กระเป๋า';
-            };
-            
             [...items].reverse().forEach(item => {
                 const allCats = [...customCategories.expense, ...customCategories.income];
                 let icon = '✨', catName = 'ทั่วไป';
@@ -994,20 +936,16 @@
                     const catObj = allCats.find(c => c.id === item.category);
                     if (catObj) { icon = catObj.icon; catName = catObj.name; }
                 }
-                
                 let labels = '';
                 if (item.type === 'expense' && item.skipBudget) labels += '<span class="item-skip-label">⚠️ จำเป็นพิเศษ ไม่คิดงบ 150</span>';
-                
                 const src = item.source || 'bank';
                 if (item.type !== 'transfer') {
                     if (src.startsWith('credit_')) labels += `<span class="item-credit-label">💳 บัตร: ${escapeHTML(src.replace('credit_', ''))}</span>`;
-                    else labels += `<span class="item-wallet-label">📦 ผ่าน: ${getWalletName(src)}</span>`;
+                    else labels += `<span class="item-wallet-label">📦 ผ่าน: ${escapeHTML(getWalletName(src))}</span>`;
                 }
-                
                 const sign = item.type === 'income' ? '+' : (item.type === 'transfer' ? '🔁 ' : '-');
                 const amountClass = item.type === 'transfer' ? 'transfer' : item.type;
                 const bg = item.type === 'income' ? 'var(--success)' : (item.type === 'expense' ? 'var(--primary)' : 'var(--accent-blue)');
-                
                 const itemEl = document.createElement('div');
                 itemEl.className = 'history-item';
                 itemEl.innerHTML = `
@@ -1024,7 +962,6 @@
                 list.appendChild(itemEl);
             });
         }
-        
         function renderFormCategories() {
             const grid = $('formCategoryGrid');
             grid.innerHTML = '';
@@ -1039,7 +976,6 @@
                 grid.appendChild(el);
             });
         }
-        
         function resetForm() {
             editingTransactionId = null;
             editingDateKey = null;
@@ -1052,17 +988,14 @@
             selectedPaymentSource = 'bank';
             transferFromSource = 'bank';
             transferToSource = 'cash';
-            
             document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === 'expense'));
             switchFormTypeElements();
             selectedCategory = customCategories.expense?.[0]?.id || '';
             renderFormCategories();
         }
-        
         function setTypeButtonActive(type) {
             document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
         }
-        
         function editTransaction(dateKey, transactionId) {
             const item = (db[dateKey] || []).find(x => Number(x.id) === Number(transactionId));
             if (!item) return alert('ไม่พบรายการนี้แล้วค๊าบ');
@@ -1073,20 +1006,17 @@
             transferFromSource = item.transferFrom || 'bank';
             transferToSource = item.transferTo || 'cash';
             selectedCategory = item.category || '';
-            
             $('amountInput').value = item.amount;
             $('noteInput').value = item.note || '';
             $('skipBudgetCheck').checked = Boolean(item.skipBudget);
             $('modalTitle').innerText = 'แก้ไขรายการปุกปิก ✏️';
             $('saveTransactionBtn').innerText = '💾 บันทึกการแก้ไข';
-            
             setTypeButtonActive(currentType);
             switchFormTypeElements();
             renderFormCategories();
             $('modalOverlay').classList.add('show');
             setTimeout(() => $('amountInput').focus(), 120);
         }
-        
         function buildTransactionPayload(amount, note, existing = {}) {
             const now = new Date();
             const timeStr = existing.time || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -1103,16 +1033,11 @@
                 transferTo: currentType === 'transfer' ? transferToSource : ''
             };
         }
-        
         function handleSaveTransaction() {
             const amount = Number($('amountInput').value);
             const note = $('noteInput').value.trim();
             if (!Number.isFinite(amount) || amount <= 0) return alert('กรุณากรอกจำนวนเงินให้ถูกต้องน้า 🥺');
-            
-            if (currentType === 'transfer' && transferFromSource === transferToSource) {
-                return alert('กระเป๋าต้นทางกับปลายทางเป็นใบเดียวกันไม่ได้นะน้า 😮');
-            }
-            
+            if (currentType === 'transfer' && transferFromSource === transferToSource) return alert('กระเป๋าต้นทางกับปลายทางเป็นใบเดียวกันไม่ได้นะน้า 😮');
             if (editingTransactionId !== null && editingDateKey !== null) {
                 const list = db[editingDateKey] || [];
                 const index = list.findIndex(item => Number(item.id) === Number(editingTransactionId));
@@ -1126,14 +1051,12 @@
                 initApp();
                 return;
             }
-            
             if (!db[selectedDateKey]) db[selectedDateKey] = [];
             db[selectedDateKey].push(buildTransactionPayload(amount, note, { id: Date.now() }));
             saveAll();
             closeModal();
             initApp();
         }
-        
         function deleteTransaction(dateKey, transactionId) {
             if (!db[dateKey]) return;
             if (!confirm('ต้องการลบรายการนี้ใช่ไหมค๊าบ? 🥺')) return;
@@ -1142,11 +1065,10 @@
             saveAll();
             initApp();
         }
-        
         function backupData() {
             const payload = {
                 app: 'PukPik Pocket',
-                version: '5.2',
+                version: '5.3',
                 exportedAt: new Date().toISOString(),
                 db,
                 creditCards,
@@ -1165,9 +1087,7 @@
             URL.revokeObjectURL(link.href);
             link.remove();
         }
-        
         function triggerRestore() { $('restoreFileInput').click(); }
-        
         function restoreData(event) {
             const file = event.target.files[0];
             if (!file) return;
