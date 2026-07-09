@@ -7,10 +7,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#ffb7b2">
 
-    <link rel="apple-touch-icon" href="IMG_6196.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="IMG_6196.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="IMG_6196.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="IMG_6196.png">
+    <link rel="apple-touch-icon" href="IMG_5733.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="IMG_5733.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="IMG_5733.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="IMG_5733.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -470,6 +470,8 @@
         let selectedPaymentSource = 'bank';
         let selectedTransferDirection = 'bank_to_cash';
         let selectedCategory = '';
+        let editingTransactionId = null;
+        let editingDateKey = null;
 
         const defaultCreditCards = ['เฟิร์สช้อยส์', 'อิออน M GEN'];
         const defaultCategories = {
@@ -851,7 +853,10 @@
                         <div class="item-time">${escapeHTML(item.time)} | ${escapeHTML(catName)}</div>
                     </div>
                     <div class="item-amount ${amountClass}">${sign}${money(item.amount, 2)} ฿${labels}</div>
-                    <div class="item-actions-wrapper"><button type="button" class="item-action-mini-btn delete" onclick="deleteTransaction('${dateKey}', ${Number(item.id)})">❌</button></div>`;
+                    <div class="item-actions-wrapper">
+                        <button type="button" class="item-action-mini-btn" title="แก้ไข" onclick="editTransaction('${dateKey}', ${Number(item.id)})">✏️</button>
+                        <button type="button" class="item-action-mini-btn delete" title="ลบ" onclick="deleteTransaction('${dateKey}', ${Number(item.id)})">❌</button>
+                    </div>`;
                 list.appendChild(itemEl);
             });
         }
@@ -872,6 +877,10 @@
         }
 
         function resetForm() {
+            editingTransactionId = null;
+            editingDateKey = null;
+            $('modalTitle').innerText = 'เพิ่มรายการปุกปิก 🥑';
+            $('saveTransactionBtn').innerText = 'บันทึกเลย! ✨';
             $('amountInput').value = '';
             $('noteInput').value = '';
             $('skipBudgetCheck').checked = false;
@@ -885,15 +894,40 @@
             renderFormCategories();
         }
 
-        function handleSaveTransaction() {
-            const amount = Number($('amountInput').value);
-            const note = $('noteInput').value.trim();
-            if (!Number.isFinite(amount) || amount <= 0) return alert('กรุณากรอกจำนวนเงินให้ถูกต้องน้า 🥺');
-            if (!db[selectedDateKey]) db[selectedDateKey] = [];
+        function setTypeButtonActive(type) {
+            document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+        }
+
+        function editTransaction(dateKey, transactionId) {
+            const item = (db[dateKey] || []).find(x => Number(x.id) === Number(transactionId));
+            if (!item) return alert('ไม่พบรายการนี้แล้วค๊าบ');
+
+            editingTransactionId = transactionId;
+            editingDateKey = dateKey;
+            currentType = item.type || 'expense';
+            selectedPaymentSource = item.source || 'bank';
+            selectedTransferDirection = item.transferDirection || 'bank_to_cash';
+            selectedCategory = item.category || '';
+
+            $('amountInput').value = item.amount;
+            $('noteInput').value = item.note || '';
+            $('skipBudgetCheck').checked = Boolean(item.skipBudget);
+            $('modalTitle').innerText = 'แก้ไขรายการปุกปิก ✏️';
+            $('saveTransactionBtn').innerText = '💾 บันทึกการแก้ไข';
+
+            setTypeButtonActive(currentType);
+            selectTransferDirection(selectedTransferDirection);
+            switchFormTypeElements();
+            renderFormCategories();
+            $('modalOverlay').classList.add('show');
+            setTimeout(() => $('amountInput').focus(), 120);
+        }
+
+        function buildTransactionPayload(amount, note, existing = {}) {
             const now = new Date();
-            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            db[selectedDateKey].push({
-                id: Date.now(),
+            const timeStr = existing.time || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            return {
+                ...existing,
                 type: currentType,
                 amount: Math.round(amount * 100) / 100,
                 note,
@@ -902,7 +936,30 @@
                 skipBudget: currentType === 'expense' ? $('skipBudgetCheck').checked : false,
                 source: currentType !== 'transfer' ? selectedPaymentSource : '',
                 transferDirection: currentType === 'transfer' ? selectedTransferDirection : ''
-            });
+            };
+        }
+
+        function handleSaveTransaction() {
+            const amount = Number($('amountInput').value);
+            const note = $('noteInput').value.trim();
+            if (!Number.isFinite(amount) || amount <= 0) return alert('กรุณากรอกจำนวนเงินให้ถูกต้องน้า 🥺');
+
+            if (editingTransactionId !== null && editingDateKey !== null) {
+                const list = db[editingDateKey] || [];
+                const index = list.findIndex(item => Number(item.id) === Number(editingTransactionId));
+                if (index === -1) return alert('ไม่พบรายการเดิมสำหรับแก้ไขค๊าบ');
+                list[index] = buildTransactionPayload(amount, note, list[index]);
+                db[editingDateKey] = list;
+                saveAll();
+                closeModal();
+                editingTransactionId = null;
+                editingDateKey = null;
+                initApp();
+                return;
+            }
+
+            if (!db[selectedDateKey]) db[selectedDateKey] = [];
+            db[selectedDateKey].push(buildTransactionPayload(amount, note, { id: Date.now() }));
             saveAll();
             closeModal();
             initApp();
