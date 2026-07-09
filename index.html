@@ -518,14 +518,30 @@
         }
         
         function normalizeData() {
-            if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
-            if (!customCategories.income) customCategories.income = defaultCategories.income;
-            if (!Array.isArray(creditCards)) creditCards = [...defaultCreditCards];
-            if (!Array.isArray(customWallets)) customWallets = [];
-            
-            Object.keys(db || {}).forEach(dateKey => {
-                if (!Array.isArray(db[dateKey])) delete db[dateKey];
-                else db[dateKey] = db[dateKey].map(item => ({
+    if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
+    if (!customCategories.income) customCategories.income = defaultCategories.income;
+    if (!Array.isArray(creditCards)) creditCards = [...defaultCreditCards];
+    if (!Array.isArray(customWallets)) customWallets = [];
+
+    Object.keys(db || {}).forEach(dateKey => {
+        if (!Array.isArray(db[dateKey])) {
+            delete db[dateKey];
+        } else {
+            db[dateKey] = db[dateKey].map(item => {
+                let transferFrom = item.transferFrom || '';
+                let transferTo = item.transferTo || '';
+
+                if (item.type === 'transfer' && !transferFrom && !transferTo) {
+                    if (item.transferDirection === 'cash_to_bank') {
+                        transferFrom = 'cash';
+                        transferTo = 'bank';
+                    } else {
+                        transferFrom = 'bank';
+                        transferTo = 'cash';
+                    }
+                }
+
+                return {
                     id: item.id || Date.now() + Math.random(),
                     type: item.type || 'expense',
                     amount: Number(item.amount) || 0,
@@ -533,13 +549,15 @@
                     category: item.category || '',
                     time: item.time || '00:00',
                     skipBudget: Boolean(item.skipBudget),
-                    source: item.source || 'bank',
-                    transferFrom: item.transferFrom || item.source || '', 
-                    transferTo: item.transferTo || item.transferDirection || '' 
-                })).filter(item => item.amount > 0);
-            });
-            saveAll();
+                    source: item.type === 'transfer' ? '' : (item.source || 'bank'),
+                    transferFrom,
+                    transferTo
+                };
+            }).filter(item => item.amount > 0);
         }
+    });
+
+    saveAll();
         
         function initApp() {
             renderCalendar();
