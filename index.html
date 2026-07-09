@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PukPik Pocket</title>
+    <title>PukPik Pocket Pro</title>
     
-    <!-- Apple Touch Icon (ใช้รูปโลโก้ 1:1 ที่เราดีไซน์กันไว้ได้เลย) -->
+    <!-- Apple Touch Icon -->
     <link rel="apple-touch-icon" href="IMG_5733.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <style>
-        /* รีเซ็ตระบบเพื่อป้องกันการเลื่อนและบั๊กบน iOS */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -21,293 +20,442 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f7f9fc;
-            color: #333;
-            overflow: hidden; /* ป้องกันหน้าเว็บเด้งไปมา */
+            background-color: #f4f6fa;
+            color: #2d3436;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
-        /* ส่วนหัวแอป */
         header {
             background: linear-gradient(135deg, #6c5ce7, #a29bfe);
             color: #fff;
-            padding: 20px 16px;
+            padding: 24px 16px 16px 16px;
             text-align: center;
             font-weight: bold;
-            font-size: 1.2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(108, 92, 231, 0.2);
+            letter-spacing: 0.5px;
         }
 
-        /* พื้นที่แสดงข้อมูลหลัก */
         .container {
             flex: 1;
             overflow-y: auto;
             padding: 16px;
-            padding-bottom: 100px; /* กันปุ่มด้านล่างบัง */
+            padding-bottom: 40px;
         }
 
-        /* การ์ดสรุปยอดเงิน */
-        .balance-card {
+        /* Dashboard สรุปยอด */
+        .dashboard {
             background: #fff;
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+
+        .total-box {
+            text-align: center;
             margin-bottom: 16px;
+            border-bottom: 1px solid #f1f2f6;
+            padding-bottom: 16px;
+        }
+
+        .total-box h2 {
+            font-size: 2.2rem;
+            color: #2d3436;
+            margin-top: 4px;
+        }
+
+        .stats-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .stat-card {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
             text-align: center;
         }
+        .stat-card.inc { background-color: #e3faf2; color: #2ecc71; }
+        .stat-card.exp { background-color: #fff5f5; color: #ff7675; }
+        .stat-val { font-weight: bold; font-size: 1.1rem; margin-top: 2px; }
 
-        .balance-card h2 {
-            font-size: 2rem;
-            color: #2d3436;
-            margin-top: 8px;
+        /* การ์ดฟอร์มหลัก */
+        .main-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
         }
 
-        /* ฟอร์มกรอกข้อมูล */
-        .form-group {
-            background: #fff;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        /* ปุ่มเลือกประเภทรายรับ/รายจ่าย */
+        .type-grid {
+            display: flex;
+            gap: 12px;
             margin-bottom: 16px;
         }
 
-        label {
-            display: block;
-            font-size: 0.9rem;
-            color: #636e72;
-            margin-bottom: 8px;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border 0.2s;
-        }
-
-        input:focus, select:focus {
-            border-color: #6c5ce7;
-        }
-
-        /* ส่วนเลือกประเภท รายรับ / รายจ่าย */
-        .type-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .type-btn {
+        .btn-type {
             flex: 1;
-            padding: 12px;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
+            padding: 14px;
+            border: 2px solid #f1f2f6;
+            border-radius: 12px;
             background: #fff;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .btn-type.inc-btn.active { background: #2ecc71; border-color: #2ecc71; color: #fff; }
+        .btn-type.exp-btn.active { background: #ff7675; border-color: #ff7675; color: #fff; }
+
+        /* สไตล์ฟอร์มอินพุต */
+        .input-block {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: #868e96;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #495057;
+            outline: none;
+            background-color: #f8f9fa;
             transition: all 0.2s;
         }
 
-        .type-btn.income.active {
-            background-color: #e3faf2;
-            border-color: #2ecc71;
-            color: #2ecc71;
+        input:focus, select:focus {
+            border-color: #6c5ce7;
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
         }
 
-        .type-btn.expense.active {
-            background-color: #fff5f5;
-            border-color: #ff7675;
-            color: #ff7675;
+        /* แผงปุ่มหมวดหมู่หมู่พาสเทล */
+        .cat-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
         }
 
-        /* ปุ่มบันทึกหลัก */
-        .submit-btn {
+        .cat-chip {
+            padding: 10px 4px;
+            background: #f1f2f6;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .cat-chip.active {
+            border-color: #6c5ce7;
+            background: #f3f0ff;
+            color: #6c5ce7;
+        }
+
+        .btn-submit {
             width: 100%;
-            background-color: #6c5ce7;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
             color: #fff;
             border: none;
             padding: 14px;
-            border-radius: 8px;
+            border-radius: 12px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
         }
 
-        /* รายการธุรกรรมล่าสุด */
-        .history-section {
-            margin-top: 20px;
-        }
-
-        .history-title {
-            font-size: 1rem;
-            color: #636e72;
-            margin-bottom: 10px;
-        }
-
-        .transaction-item {
-            background: #fff;
-            padding: 12px 16px;
-            border-radius: 12px;
+        /* ส่วนตัวกรองข้อมูลด้านล่าง (Filter) */
+        .filter-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+            margin: 24px 0 12px 0;
         }
 
-        .item-info .title {
-            font-weight: 500;
+        .filter-select {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            background-color: #fff;
         }
 
-        .item-info .tag {
-            font-size: 0.8rem;
-            color: #b2bec3;
-            margin-top: 4px;
+        /* รายการธุรกรรม */
+        .tx-item {
+            background: #fff;
+            padding: 14px 16px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+            border-left: 5px solid transparent;
         }
 
-        .item-amount {
-            font-weight: bold;
-        }
+        .tx-item.income { border-left-color: #2ecc71; }
+        .tx-item.expense { border-left-color: #ff7675; }
 
-        .item-amount.income { color: #2ecc71; }
-        .item-amount.expense { color: #ff7675; }
+        .tx-details .tx-title { font-weight: 600; font-size: 1rem; color: #2d3436; }
+        .tx-details .tx-meta { font-size: 0.75rem; color: #a4b0be; margin-top: 4px; display: flex; gap: 8px; }
+        .tx-meta span { background: #f1f2f6; padding: 2px 6px; border-radius: 4px; color: #57606f; }
+
+        .tx-amount { font-weight: bold; font-size: 1.1rem; }
+        .tx-amount.income { color: #2ecc71; }
+        .tx-amount.expense { color: #ff7675; }
     </style>
 </head>
 <body>
 
-    <header>PukPik Pocket</header>
+    <header>PukPik Pocket Pro</header>
 
     <div class="container">
-        <!-- ยอดเงินคงเหลือ -->
-        <div class="balance-card">
-            <span style="color: #636e72; font-size: 0.9rem;">ยอดเงินคงเหลือทั้งหมด</span>
-            <h2 id="totalBalance">฿0.00</h2>
+        <!-- แดชบอร์ดสรุปยอด -->
+        <div class="dashboard">
+            <div class="total-box">
+                <span style="color: #868e96; font-size: 0.85rem; font-weight: 500;">ยอดเงินสุทธิทั้งหมด</span>
+                <h2 id="netBalance">฿0.00</h2>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card inc">
+                    <div style="font-size: 0.8rem;">รายรับรวม</div>
+                    <div class="stat-val" id="totalInc">฿0.00</div>
+                </div>
+                <div class="stat-card exp">
+                    <div style="font-size: 0.8rem;">รายจ่ายรวม</div>
+                    <div class="stat-val" id="totalExp">฿0.00</div>
+                </div>
+            </div>
         </div>
 
-        <!-- ฟอร์มบันทึก -->
-        <div class="form-group">
-            <div class="type-selector">
-                <button type="button" class="type-btn income active" onclick="setType('income')">รายรับ</button>
-                <button type="button" class="type-btn expense" onclick="setType('expense')">รายจ่าย</button>
+        <!-- การ์ดฟอร์มลงบันทึกข้อมูล -->
+        <div class="main-card">
+            <div class="type-grid">
+                <button class="btn-type inc-btn active" onclick="changeType('income')">รายรับ</button>
+                <button class="btn-type exp-btn" onclick="changeType('expense')">รายจ่าย</button>
             </div>
 
-            <div style="margin-bottom: 12px;">
-                <label for="amount">จำนวนเงิน (บาท)</label>
-                <input type="number" id="amount" inputmode="decimal" placeholder="0.00" required>
+            <div class="input-block">
+                <label>จำนวนเงิน (บาท)</label>
+                <input type="number" id="txAmount" inputmode="decimal" placeholder="0.00" required>
             </div>
 
-            <div style="margin-bottom: 16px;">
-                <label for="note">บันทึกความจำ</label>
-                <input type="text" id="note" placeholder="เช่น ค่ากาแฟ, เงินเดือน">
+            <div class="input-block">
+                <label>ช่องทางเงิน / บัญชี / บัตรเครดิต</label>
+                <select id="txWallet">
+                    <option value="เงินสด">💵 เงินสด</option>
+                    <option value="บัญชีธนาคาร">🏦 บัญชีธนาคาร</option>
+                    <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
+                </select>
             </div>
 
-            <button type="button" class="submit-btn" onclick="addTransaction()">บันทึกรายการ</button>
+            <div class="input-block">
+                <label>หมวดหมู่</label>
+                <div class="cat-container" id="catContainer">
+                    <!-- จะถูก render ตามประเภทโดย JavaScript -->
+                </div>
+            </div>
+
+            <div class="input-block">
+                <label>บันทึกความจำเพิ่มเติม</label>
+                <input type="text" id="txNote" placeholder="รายละเอียดสั้นๆ">
+            </div>
+
+            <button class="btn-submit" onclick="submitTransaction()">บันทึกรายการ</button>
         </div>
 
-        <!-- ประวัติรายการ -->
-        <div class="history-section">
-            <div class="history-title">รายการล่าสุด</div>
-            <div id="transactionList">
-                <!-- รายการจะมาโผล่ตรงนี้ -->
-            </div>
+        <!-- รายการล่าสุดและการกรองข้อมูล -->
+        <div class="filter-section">
+            <h3 style="font-size: 1rem; color: #485460;">ประวัติรายการ</h3>
+            <select id="filterWallet" class="filter-select" onchange="renderUI()">
+                <option value="all">ทั้งหมด ทุกบัญชี</option>
+                <option value="เงินสด">💵 เงินสด</option>
+                <option value="บัญชีธนาคาร">🏦 บัญชีธนาคาร</option>
+                <option value="บัตรเครดิต">💳 บัตรเครดิต</option>
+            </select>
+        </div>
+
+        <div id="txList">
+            <!-- ข้อมูลรายการจะมาเรนเดอร์ตรงนี้ -->
         </div>
     </div>
 
     <script>
-        // โครงสร้างฐานข้อมูลจำลอง (ดึงข้อมูลเก่าจาก LocalStorage ถ้ามี)
-        let state = JSON.parse(localStorage.getItem('pocket_db')) || {
-            balance: 0,
-            transactions: [],
-            currentType: 'income'
+        // ข้อมูลหมวดหมู่เริ่มต้นแยกฝั่งชัดเจน
+        const categories = {
+            income: [
+                { id: 'inc_salary', name: '💰 เงินเดือน' },
+                { id: 'inc_sales', name: '🛍️ ขายของ' },
+                { id: 'inc_invest', name: '📈 ลงทุน' },
+                { id: 'inc_other', name: '✨ อื่นๆ' }
+            ],
+            expense: [
+                { id: 'exp_food', name: '🍲 อาหาร' },
+                { id: 'exp_travel', name: '🚗 เดินทาง' },
+                { id: 'exp_shopping', name: '🛒 ช้อปปิ้ง' },
+                { id: 'exp_bills', name: '🧾 ค่าน้ำไฟ' },
+                { id: 'exp_movie', name: '🎬 บันเทิง' },
+                { id: 'exp_other', name: '📦 อื่นๆ' }
+            ]
         };
 
-        // ฟังก์ชันเปลี่ยนประเภท (รายรับ / รายจ่าย)
-        function setType(type) {
-            state.currentType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.type-btn.${type}`).classList.add('active');
+        // โครงสร้าง State ข้อมูลระบบ
+        let appState = JSON.parse(localStorage.getItem('pukpik_pro_db')) || {
+            transactions: [],
+            currentType: 'income',
+            selectedCategory: ''
+        };
+
+        // ฟังก์ชันสลับฝั่ง รายรับ / รายจ่าย
+        function changeType(type) {
+            appState.currentType = type;
+            document.querySelectorAll('.btn-type').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.${type === 'income' ? 'inc-btn' : 'exp-btn'}`).classList.add('active');
+            
+            renderCategories();
         }
 
-        // ฟังก์ชันคำนวณและอัปเดตหน้าจอ UI
-        function updateUI() {
-            // คำนวณยอดรวมใหม่เสมอเพื่อความแม่นยำ
-            state.balance = state.transactions.reduce((acc, curr) => {
-                return curr.type === 'income' ? acc + curr.amount : acc - curr.amount;
-            }, 0);
+        // ฟังก์ชันวาดปุ่มหมวดหมู่ (Category Chips) ตามประเภทที่เลือก
+        function renderCategories() {
+            const container = document.getElementById('catContainer');
+            container.innerHTML = '';
+            
+            const currentCats = categories[appState.currentType];
+            
+            // เลือกหมวดหมู่อันแรกเป็น Default เสมอเมื่อสลับประเภท
+            appState.selectedCategory = currentCats[0].name;
 
-            // แสดงผลยอดเงิน
-            document.getElementById('totalBalance').innerText = `฿${state.balance.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            currentCats.forEach((cat, index) => {
+                const chip = document.createElement('div');
+                chip.className = `cat-chip ${index === 0 ? 'active' : ''}`;
+                chip.innerText = cat.name;
+                chip.onclick = () => {
+                    document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    appState.selectedCategory = cat.name;
+                };
+                container.appendChild(chip);
+            });
+        }
 
-            // แสดงผลรายการประวัติ
-            const listContainer = document.getElementById('transactionList');
+        // ฟังก์ชันคำนวณเงินและวาด UI ทั้งหมดบนหน้าจอ
+        function renderUI() {
+            const filterValue = document.getElementById('filterWallet').value;
+            
+            // 1. กรองข้อมูลตาม Wallet ที่เลือก
+            const filteredTx = appState.transactions.filter(item => {
+                return filterValue === 'all' ? true : item.wallet === filterValue;
+            });
+
+            // 2. คำนวณยอดสรุป (คิดจากยอดทั้งหมด หรือ ยอดที่ Filter แล้วแต่ความชอบ แต่แนะนำให้คิดตามตัวกรอง)
+            let totalIncome = 0;
+            let totalExpense = 0;
+
+            filteredTx.forEach(item => {
+                if (item.type === 'income') totalIncome += item.amount;
+                if (item.type === 'expense') totalExpense += item.amount;
+            });
+
+            let net = totalIncome - totalExpense;
+
+            // 3. แสดงผลตัวเลขบนแดชบอร์ด
+            document.getElementById('netBalance').innerText = `฿${net.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('totalInc').innerText = `฿${totalIncome.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+            document.getElementById('totalExp').innerText = `฿${totalExpense.toLocaleString('th-TH', { minimumFractionDigits: 2 })}`;
+
+            // 4. แสดงลิสต์รายการประวัติ
+            const listContainer = document.getElementById('txList');
             listContainer.innerHTML = '';
 
-            if (state.transactions.length === 0) {
-                listContainer.innerHTML = `<div style="text-align:center; color:#b2bec3; padding:20px;">ยังไม่มีรายการวันนี้</div>`;
+            if (filteredTx.length === 0) {
+                listContainer.innerHTML = `<div style="text-align:center; color:#b2bec3; padding:30px; font-size:0.9rem;">ไม่มีรายการสำหรับเงื่อนไขนี้ค๊าบ</div>`;
                 return;
             }
 
-            // แสดงรายการล่าสุดขึ้นก่อน (Reverse)
-            [...state.transactions].reverse().forEach(item => {
+            // แสดงรายการล่าสุดไว้บนสุด (Reverse)
+            [...filteredTx].reverse().forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'transaction-item';
+                div.className = `tx-item ${item.type}`;
                 div.innerHTML = `
-                    <div class="item-info">
-                        <div class="title">${item.note || (item.type === 'income' ? 'รายรับ' : 'รายจ่าย')}</div>
-                        <div class="tag">${item.date}</div>
+                    <div class="tx-details">
+                        <div class="tx-title">${item.note || item.category}</div>
+                        <div class="tx-meta">
+                            <span>${item.category}</span>
+                            <span>${item.wallet}</span>
+                            <span style="background:none; padding:0;">${item.time}</span>
+                        </div>
                     </div>
-                    <div class="item-amount ${item.type}">
-                        ${item.type === 'income' ? '+' : '-'}฿${item.amount.toFixed(2)}
+                    <div class="tx-amount ${item.type}">
+                        ${item.type === 'income' ? '+' : '-'}฿${item.amount.toLocaleString('th-TH', { minimumFractionDigits: 2 })}
                     </div>
                 `;
                 listContainer.appendChild(div);
             });
 
-            // เซฟลงเครื่องกันหาย
-            localStorage.setItem('pocket_db', JSON.stringify(state));
+            // เซฟข้อมูลลงเครื่องอัตโนมัติกันเหนียว
+            localStorage.setItem('pukpik_pro_db', JSON.stringify(appState));
         }
 
-        // ฟังก์ชันกดบันทึกรายการ
-        function addTransaction() {
-            const amountInput = document.getElementById('amount');
-            const noteInput = document.getElementById('note');
+        // ฟังก์ชันเมื่อกดปุ่ม "บันทึกรายการ"
+        function submitTransaction() {
+            const amountInput = document.getElementById('txAmount');
+            const walletInput = document.getElementById('txWallet');
+            const noteInput = document.getElementById('txNote');
+            
             const amount = parseFloat(amountInput.value);
 
-            // Validation เช็คค่าว่างหรือติดลบ
+            // Validation ตรวจสอบความถูกต้อง
             if (isNaN(amount) || amount <= 0) {
-                alert('กรุณากรอกจำนวนเงินที่ถูกต้องค๊าบ');
+                alert('กรุณากรอกจำนวนเงินให้ถูกต้องก่อนบันทึกค๊าบ!');
                 return;
             }
 
-            // สร้างก้อนข้อมูลใหม่
-            const newTransaction = {
+            // สร้าง Object ข้อมูลชิ้นใหม่
+            const newTx = {
                 id: Date.now(),
-                type: state.currentType,
+                type: appState.currentType,
                 amount: amount,
+                wallet: walletInput.value,
+                category: appState.selectedCategory,
                 note: noteInput.value.trim(),
-                date: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+                time: new Date().toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
             };
 
-            // บันทึกเข้าคลังข้อมูล
-            state.transactions.push(newTransaction);
+            // ดันข้อมูลใหม่เข้า Array
+            appState.transactions.push(newTx);
 
-            // เคลียร์ค่าในฟอร์มหลังจากบันทึกเสร็จ
+            // เคลียร์ค่าอินพุตที่จำเป็นหลังบันทึก
             amountInput.value = '';
             noteInput.value = '';
 
-            // อัปเดตหน้าจอ
-            updateUI();
+            // รีเรนเดอร์หน้าจอใหม่
+            renderUI();
         }
 
-        // สั่งให้ทำงานครั้งแรกเพื่อดึงข้อมูลเก่าขึ้นมาโชว์
-        updateUI();
+        // สั่งทำงานตอนเปิดแอปครั้งแรก
+        changeType(appState.currentType); // โหลดหน้าปุ่มหมวดหมู่ให้พร้อม
+        renderUI(); // ดึงข้อมูลเก่ามาโชว์บนหน้าจอ
     </script>
 </body>
 </html>
