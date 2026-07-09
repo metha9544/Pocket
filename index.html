@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="apple-mobile-web-app-title" content="PukPik Pocket">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#ffb7b2">
+
+    <link rel="apple-touch-icon" href="IMG_5733.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="IMG_5733.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="IMG_5733.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="IMG_5733.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>PukPik Pocket v5.1</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="phone-container">
+        <div class="mini-banner">
+            <div class="banner-left">
+                <div class="mascot-mini" id="mascotEmoji">🐻</div>
+                <div class="banner-speech" id="mascotSpeech">ลุยประหยัดกันค๊าบ!</div>
+            </div>
+            <div class="banner-budget-badge" id="budgetBadgeColor">
+                <div class="banner-budget-label" id="budgetText">งบกินวันนี้เหลือ</div>
+                <div class="banner-budget-amount"><span id="dailyRemaining">150.00</span> ฿</div>
+            </div>
+        </div>
+
+        <div class="overall-summary-card">
+            <div class="summary-total-row">
+                <div class="summary-box inc">📥 รับรวมเดือนนี้:<br><span id="totalIncomeText">0</span> ฿</div>
+                <div class="summary-box exp">📤 จ่ายรวมเดือนนี้:<br><span id="totalExpenseText">0</span> ฿</div>
+            </div>
+            <div class="wallet-summary-row">
+                <div class="wallet-box bank"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val" id="totalBankText">0.00</span></div>
+                <div class="wallet-box cash"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val" id="totalCashText">0.00</span></div>
+                <div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val" id="totalCombinedText">0.00</span></div>
+            </div>
+            <div class="credit-summary-row">
+                <span>💳 ยอดใช้บัตรเครดิตเดือนนี้:</span>
+                <div><span id="totalCreditText">0.00</span> ฿</div>
+            </div>
+            <div class="credit-cards-breakdown-zone" id="creditCardsBreakdownZone"></div>
+            <div class="system-action-row">
+                <button class="sys-btn" type="button" onclick="backupData()">📤 สำรองข้อมูล</button>
+                <button class="sys-btn" type="button" onclick="triggerRestore()">📥 ดึงคืนข้อมูล</button>
+                <input type="file" id="restoreFileInput" accept=".json,application/json" style="display:none" onchange="restoreData(event)">
+            </div>
+            <div class="category-summary-grid" id="categorySummaryGrid"></div>
+        </div>
+
+        <div class="app-body">
+            <div class="calendar-header">
+                <div class="calendar-title" id="calendarMonthYear">กรกฎาคม 2569</div>
+                <div>
+                    <button class="calendar-btn" type="button" onclick="changeMonth(-1)" aria-label="เดือนก่อนหน้า">👈</button>
+                    <button class="calendar-btn" type="button" onclick="goToday()" aria-label="วันนี้">วันนี้</button>
+                    <button class="calendar-btn" type="button" onclick="changeMonth(1)" aria-label="เดือนถัดไป">👉</button>
+                </div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="weekday">อา</div><div class="weekday">จ</div><div class="weekday">อ</div><div class="weekday">พ</div><div class="weekday">พฤ</div><div class="weekday">ศ</div><div class="weekday">ส</div>
+            </div>
+            <div class="history-section">
+                <div class="section-heading">
+                    <span id="historyTitle">รายการวันนี้</span>
+                    <span id="dayTotalExpense" style="font-size:12px;font-weight:500;color:var(--text-muted);">ใช้ไป: 0 ฿</span>
+                </div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+        </div>
+        <button class="fab-btn" id="openModalBtn" type="button" aria-label="เพิ่มรายการ">＋</button>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <div style="font-weight:800;font-size:16px" id="modalTitle">เพิ่มรายการปุกปิก 🥑</div>
+                <button class="close-btn" type="button" id="closeModalBtn">✕</button>
+            </div>
+            <div class="type-selector">
+                <button class="type-btn active" type="button" data-type="expense">รายจ่าย 💸</button>
+                <button class="type-btn" type="button" data-type="income">รายรับ 💰</button>
+                <button class="type-btn" type="button" data-type="transfer">โยกย้ายเงิน 🔁</button>
+            </div>
+            <div id="walletSelectorZone">
+                <label class="form-label" id="walletZoneLabel">ทำรายการผ่านกระเป๋าหรือบัตรไหน?</label>
+                <div class="wallet-selector-group" id="walletButtonsContainer"></div>
+            </div>
+            <div id="transferDirectionZone" style="display:none">
+                <label class="form-label">ทิศทางการโยกย้ายเงิน</label>
+                <div class="wallet-selector-group">
+                    <button class="wallet-select-btn active" type="button" id="transBankToCashBtn" onclick="selectTransferDirection('bank_to_cash')">🏦 บัญชี ➡️ 💵 เงินสด</button>
+                    <button class="wallet-select-btn" type="button" id="transCashToBankBtn" onclick="selectTransferDirection('cash_to_bank')">💵 เงินสด ➡️ 🏦 บัญชี</button>
+                </div>
+            </div>
+            <div class="custom-checkbox-row skip" id="skipBudgetRow">
+                <input type="checkbox" id="skipBudgetCheck">
+                <label for="skipBudgetCheck">✨ ยอดจำเป็นพิเศษ ไม่หักงบวันละ 150 บ.</label>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="amountInput">จำนวนเงิน (บาท)</label>
+                <input type="number" id="amountInput" class="input-field" placeholder="0.00" step="0.01" min="0" required inputmode="decimal">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="noteInput">บันทึกช่วยจำ</label>
+                <input type="text" id="noteInput" class="input-field" maxlength="80" placeholder="เช่น ค่าข้าวกล่อง, รูดซื้อของกิน">
+            </div>
+            <div id="categoryZone">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;gap:8px">
+                    <label class="form-label" style="margin-bottom:0">หมวดหมู่</label>
+                    <button class="add-manage-btn" type="button" onclick="addNewCategory()" style="padding:3px 9px;border-radius:8px">➕ เพิ่มหมวด</button>
+                </div>
+                <div class="category-grid" id="formCategoryGrid"></div>
+            </div>
+            <button type="button" class="submit-btn" id="saveTransactionBtn">บันทึกเลย! ✨</button>
+        </div>
+    </div>
+
+    <script src="app.js" defer></script>
+</body>
+</html>
