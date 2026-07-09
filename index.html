@@ -13,7 +13,7 @@
     <link class="icon" type="image/png" sizes="32x32" href="IMG_5733.png">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PukPik Pocket v5.0 - ระบบจัดการบัตรและหมวดหมู่เต็มรูปแบบ</title>
+    <title>PukPik Pocket v5.0 - Fixed Commit</title>
     <style>
         :root {
             --bg-color: #f7f9fc;
@@ -64,7 +64,6 @@
             position: relative;
         }
 
-        /* Mini Banner Section */
         .mini-banner {
             background: linear-gradient(135deg, #fff0f0 0%, #fcedeb 100%);
             padding: 12px 16px;
@@ -122,19 +121,9 @@
         .banner-budget-badge.warning { background: #ffcaa1; }
         .banner-budget-badge.danger { background: #ffb7b2; }
 
-        .banner-budget-label {
-            font-size: 10px;
-            font-weight: bold;
-            color: #5a5a5a;
-        }
+        .banner-budget-label { font-size: 10px; font-weight: bold; color: #5a5a5a; }
+        .banner-budget-amount { font-size: 16px; font-weight: bold; color: #333; }
 
-        .banner-budget-amount {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* Overall Summary Dashboard */
         .overall-summary-card {
             background: #fafbfc;
             padding: 12px 16px;
@@ -156,19 +145,9 @@
             text-align: center;
         }
 
-        .summary-box.inc {
-            background-color: #e8f8f2;
-            color: #2b5144;
-            border: 1px solid var(--success);
-        }
+        .summary-box.inc { background-color: #e8f8f2; color: #2b5144; border: 1px solid var(--success); }
+        .summary-box.exp { background-color: #fff0f0; color: #5c2724; border: 1px solid var(--primary); }
 
-        .summary-box.exp {
-            background-color: #fff0f0;
-            color: #5c2724;
-            border: 1px solid var(--primary);
-        }
-
-        /* แถบกระเป๋าเงินสด บัญชี และคงเหลือรวม */
         .wallet-summary-row {
             display: flex;
             gap: 5px;
@@ -207,7 +186,6 @@
             align-items: center;
         }
 
-        /* โซนแสดงรายละเอียดรายบัตรเครดิต */
         .credit-cards-breakdown-zone {
             display: flex;
             gap: 6px;
@@ -498,6 +476,7 @@
         <button class="fab-btn" id="openModalBtn">＋</button>
     </div>
 
+    <!-- หน้าต่างทำรายการ (Modal) -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -513,8 +492,7 @@
 
             <div id="walletSelectorZone">
                 <label class="form-label" id="walletZoneLabel">ทำรายการผ่านกระเป๋าหรือบัตรไหน?</label>
-                <div class="wallet-selector-group" id="walletButtonsContainer">
-                    </div>
+                <div class="wallet-selector-group" id="walletButtonsContainer"></div>
             </div>
 
             <div id="transferDirectionZone" style="display: none;">
@@ -562,7 +540,6 @@
         let selectedTransferDirection = 'bank_to_cash'; 
         let selectedCategory = '';
 
-        // คลังข้อมูลหลัก
         let db = JSON.parse(localStorage.getItem('pukpik_db_v4')) || {};
         let creditCards = JSON.parse(localStorage.getItem('pukpik_cards')) || ['เฟิร์สช้อยส์', 'อิออน M GEN'];
         let customCategories = JSON.parse(localStorage.getItem('pukpik_categories')) || {
@@ -651,8 +628,13 @@
                     e.target.classList.add('active');
                     currentType = e.target.dataset.type;
                     
-                    if (currentType === 'income') selectedPaymentSource = 'bank';
-                    if (currentType === 'expense') selectedPaymentSource = 'bank';
+                    selectedPaymentSource = 'bank';
+                    
+                    if (currentType !== 'transfer' && customCategories[currentType] && customCategories[currentType].length > 0) {
+                        selectedCategory = customCategories[currentType][0].id;
+                    } else {
+                        selectedCategory = '';
+                    }
 
                     switchFormTypeElements();
                     renderFormCategories();
@@ -838,102 +820,96 @@
         }
 
         function renderOverallAndCategorySummary() {
-    let totalIncome = 0;
-    let totalExpense = 0;
-    let totalCredit = 0;
-    
-    let bankBalance = 0;
-    let cashBalance = 0;
-    
-    let catTotals = {};       
-    let cardBreakdownTotals = {}; 
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalCredit = 0;
+            
+            let bankBalance = 0;
+            let cashBalance = 0;
+            
+            let catTotals = {};       
+            let cardBreakdownTotals = {}; 
 
-    // เคลียร์ค่าเริ่มต้นของรายบัตรเครดิต
-    creditCards.forEach(c => cardBreakdownTotals[c] = 0);
+            creditCards.forEach(c => cardBreakdownTotals[c] = 0);
 
-    Object.keys(db).forEach(dateKey => {
-        if (!Array.isArray(db[dateKey])) return;
-        
-        db[dateKey].forEach(item => {
-            const amount = parseFloat(item.amount) || 0;
-            const source = item.source || 'bank';
-
-            if (item.type === 'income') {
-                totalIncome += amount;
-                if (source === 'bank') bankBalance += amount;
-                if (source === 'cash') cashBalance += amount;
-            } else if (item.type === 'expense') {
-                totalExpense += amount;
+            Object.keys(db).forEach(dateKey => {
+                if (!Array.isArray(db[dateKey])) return;
                 
-                if (source.startsWith('credit_')) {
-                    // ยอดรูดบัตรเครดิตสะสม
-                    totalCredit += amount;
-                    const cardName = source.replace('credit_', '');
-                    cardBreakdownTotals[cardName] = (cardBreakdownTotals[cardName] || 0) + amount;
-                } else {
-                    // หักจากกระเป๋าเงินจริงเท่านั้น ถึงจะมาคิดในนี้
-                    if (source === 'bank') bankBalance -= amount;
-                    if (source === 'cash') cashBalance -= amount;
+                db[dateKey].forEach(item => {
+                    const amount = parseFloat(item.amount) || 0;
+                    const source = item.source || 'bank';
+
+                    if (item.type === 'income') {
+                        totalIncome += amount;
+                        if (source === 'bank') bankBalance += amount;
+                        if (source === 'cash') cashBalance += amount;
+                    } else if (item.type === 'expense') {
+                        totalExpense += amount;
+                        
+                        if (source.startsWith('credit_')) {
+                            totalCredit += amount;
+                            const cardName = source.replace('credit_', '');
+                            cardBreakdownTotals[cardName] = (cardBreakdownTotals[cardName] || 0) + amount;
+                        } else {
+                            if (source === 'bank') bankBalance -= amount;
+                            if (source === 'cash') cashBalance -= amount;
+                        }
+                        catTotals[item.category] = (catTotals[item.category] || 0) + amount;
+                    } else if (item.type === 'transfer') {
+                        const direction = item.transferDirection || 'bank_to_cash';
+                        if (direction === 'bank_to_cash') {
+                            bankBalance -= amount;
+                            cashBalance += amount;
+                        } else if (direction === 'cash_to_bank') {
+                            cashBalance -= amount;
+                            bankBalance += amount;
+                        }
+                    }
+                });
+            });
+
+            totalIncomeText.innerText = totalIncome.toLocaleString(undefined, {maximumFractionDigits: 2});
+            totalExpenseText.innerText = totalExpense.toLocaleString(undefined, {maximumFractionDigits: 2});
+            
+            totalBankText.innerText = bankBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            totalCashText.innerText = cashBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            const combinedBalance = bankBalance + cashBalance;
+            totalCombinedText.innerText = combinedBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            totalCreditText.innerText = totalCredit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            creditCardsBreakdownZone.innerHTML = '';
+            let hasAnyCardRecord = false;
+            
+            Object.keys(cardBreakdownTotals).forEach(card => {
+                const amt = cardBreakdownTotals[card];
+                if (amt > 0) {
+                    hasAnyCardRecord = true;
+                    const bBadge = document.createElement('div');
+                    bBadge.className = 'credit-card-mini-badge';
+                    bBadge.innerHTML = `<span>💳</span> <span>${card}:</span> <strong>${amt.toLocaleString(undefined, {maximumFractionDigits:2})} ฿</strong>`;
+                    creditCardsBreakdownZone.appendChild(bBadge);
                 }
-                
-                // ยอดหมวดหมู่รวมทุกยอดที่จ่ายไป
-                catTotals[item.category] = (catTotals[item.category] || 0) + amount;
-            } else if (item.type === 'transfer') {
-                const direction = item.transferDirection || 'bank_to_cash';
-                if (direction === 'bank_to_cash') {
-                    bankBalance -= amount;
-                    cashBalance += amount;
-                } else if (direction === 'cash_to_bank') {
-                    cashBalance -= amount;
-                    bankBalance += amount;
-                }
+            });
+
+            if (!hasAnyCardRecord) {
+                creditCardsBreakdownZone.innerHTML = `<div style="font-size: 11px; color: var(--text-muted); padding: 2px 4px;">💳 ยังไม่มีประวัติยอดรูดใช้ผ่านบัตรต่างๆ ในเดือนนี้ค๊าบ</div>`;
             }
-        });
-    });
 
-    // แสดงผลบนหน้าจอ
-    totalIncomeText.innerText = totalIncome.toLocaleString(undefined, {maximumFractionDigits: 2});
-    totalExpenseText.innerText = totalExpense.toLocaleString(undefined, {maximumFractionDigits: 2});
-    
-    totalBankText.innerText = bankBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    totalCashText.innerText = cashBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    
-    const combinedBalance = bankBalance + cashBalance;
-    totalCombinedText.innerText = combinedBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    
-    totalCreditText.innerText = totalCredit.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
-    // เรนเดอร์รายละเอียดรายบัตรเครดิต
-    creditCardsBreakdownZone.innerHTML = '';
-    let hasAnyCardRecord = false;
-    
-    Object.keys(cardBreakdownTotals).forEach(card => {
-        const amt = cardBreakdownTotals[card];
-        if (amt > 0) {
-            hasAnyCardRecord = true;
-            const bBadge = document.createElement('div');
-            bBadge.className = 'credit-card-mini-badge';
-            bBadge.innerHTML = `<span>💳</span> <span>${card}:</span> <strong>${amt.toLocaleString(undefined, {maximumFractionDigits:2})} ฿</strong>`;
-            creditCardsBreakdownZone.appendChild(bBadge);
+            categorySummaryGrid.innerHTML = '';
+            
+            const allCats = [...customCategories.expense, ...customCategories.income];
+            allCats.forEach(cat => {
+                const amount = catTotals[cat.id] || 0;
+                if (amount > 0) {
+                    const box = document.createElement('div');
+                    box.className = 'cat-summary-mini-box';
+                    box.innerHTML = `<span>${cat.icon}</span> <span>${cat.name}:</span> <strong>${Math.round(amount)} ฿</strong>`;
+                    categorySummaryGrid.appendChild(box);
+                }
+            });
         }
-    });
-
-    if (!hasAnyCardRecord) {
-        creditCardsBreakdownZone.innerHTML = `<div style="font-size: 11px; color: var(--text-muted); padding: 2px 4px;">💳 ยังไม่มีประวัติยอดรูดใช้ผ่านบัตรต่างๆ ในเดือนนี้ค๊าบ</div>`;
-    }
-
-    // เรนเดอร์แจกแจงหมวดหมู่
-    categorySummaryGrid.innerHTML = '';
-    if (customCategories.expense) {
-        customCategories.expense.forEach(cat => {
-            const amount = catTotals[cat.id] || 0;
-            const box = document.createElement('div');
-            box.className = 'cat-summary-mini-box';
-            box.innerHTML = `<span>${cat.icon}</span> <span>${cat.name}:</span> <strong>${Math.round(amount)} ฿</strong>`;
-            categorySummaryGrid.appendChild(box);
-        });
-    }
-}
 
         function renderCalendar() {
             const weekdays = calendarGrid.querySelectorAll('.weekday');
@@ -1071,8 +1047,10 @@
 
         function renderFormCategories() {
             formCategoryGrid.innerHTML = '';
-            const list = customCategories[currentType];
             
+            if (currentType === 'transfer') return;
+            
+            const list = customCategories[currentType];
             if (!list || list.length === 0) return;
 
             const hasValidCategory = list.some(c => c.id === selectedCategory);
