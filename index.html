@@ -6,7 +6,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#ffb7b2">
-
     <link rel="apple-touch-icon" href="IMG_5733.png">
     <link rel="apple-touch-icon" sizes="180x180" href="IMG_5733.png">
     <link rel="icon" type="image/png" sizes="192x192" href="IMG_5733.png">
@@ -14,7 +13,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>PukPik Pocket v5.1</title>
     <style>
@@ -34,7 +32,6 @@
             --shadow: 0 10px 34px rgba(149, 157, 165, 0.16);
             --border-radius: 20px;
         }
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -42,9 +39,7 @@
             font-family: 'Kanit', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-
         html, body { height: 100%; }
-
         body {
             background: linear-gradient(180deg, #fff7f7 0%, var(--bg-color) 50%, #f5f7ff 100%);
             color: var(--text-main);
@@ -54,10 +49,8 @@
             min-height: 100svh;
             padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
         }
-
         button, input { font: inherit; }
         button { touch-action: manipulation; }
-
         .phone-container {
             width: 100%;
             max-width: 430px;
@@ -71,7 +64,6 @@
             overflow: hidden;
             position: relative;
         }
-
         .mini-banner {
             background: linear-gradient(135deg, #fff0f0 0%, #fcedeb 100%);
             padding: 12px 16px;
@@ -81,11 +73,9 @@
             gap: 10px;
             border-bottom: 1px dashed #eee;
         }
-
         .banner-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
         .mascot-mini { font-size: 28px; animation: bounce 2s infinite alternate; }
         @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-3px); } }
-
         .banner-speech {
             font-size: 11px;
             background: #4a4a4a;
@@ -106,7 +96,6 @@
             border-style: solid;
             border-color: transparent #4a4a4a transparent transparent;
         }
-
         .banner-budget-badge {
             background: var(--accent-blue);
             padding: 7px 12px;
@@ -119,7 +108,6 @@
         .banner-budget-badge.danger { background: #ffb7b2; }
         .banner-budget-label { font-size: 10px; font-weight: 700; color: #5a5a5a; }
         .banner-budget-amount { font-size: 16px; font-weight: 800; color: #333; }
-
         .overall-summary-card { background: #fafbfc; padding: 12px 16px; border-bottom: 1px solid #f0f0f0; }
         .summary-total-row, .wallet-summary-row, .system-action-row { display: flex; gap: 7px; }
         .summary-total-row { margin-bottom: 8px; }
@@ -133,7 +121,6 @@
         }
         .summary-box.inc { background-color: #e8f8f2; color: #2b5144; border: 1px solid var(--success); }
         .summary-box.exp { background-color: #fff0f0; color: #5c2724; border: 1px solid var(--primary); }
-
         .wallet-summary-row { margin-bottom: 7px; }
         .wallet-box {
             flex: 1;
@@ -152,7 +139,6 @@
         .wallet-box.cash { background-color: #fdfaf2; color: #7d6608; border: 1px solid var(--danger); }
         .wallet-box.total { background-color: #f5eef8; color: #6c3483; border: 1px solid #d2b4de; }
         .wallet-val { font-size: 12px; margin-top: 2px; word-break: break-word; }
-
         .credit-summary-row {
             background: var(--purple-soft);
             border: 1px dashed #d6c7e8;
@@ -167,7 +153,6 @@
             align-items: center;
             gap: 10px;
         }
-
         .credit-cards-breakdown-zone, .category-summary-grid {
             display: flex;
             gap: 6px;
@@ -189,7 +174,6 @@
             gap: 4px;
         }
         .credit-card-mini-badge { color: #6c4f93; border-color: #d6c7e8; }
-
         .system-action-row { margin: 6px 0 10px; }
         .sys-btn {
             flex: 1;
@@ -203,12 +187,10 @@
             color: #5a5a5a;
         }
         .sys-btn:active { transform: scale(.98); background: #f0f0f0; }
-
         .app-body { flex: 1; overflow-y: auto; padding: 12px 16px 82px; }
         .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .calendar-title { font-size: 15px; font-weight: 800; }
         .calendar-btn { background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 16px; cursor: pointer; padding: 3px 8px; }
-
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -253,7 +235,6 @@
         .status-safe { background-color: var(--success); color: #2b5144; }
         .status-warn { background-color: var(--danger); color: #613b1d; }
         .status-over { background-color: var(--primary); color: #5c2724; }
-
         .history-section { margin-top: 15px; }
         .section-heading { font-size: 14px; font-weight: 800; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
         .history-list { display: flex; flex-direction: column; gap: 8px; }
@@ -273,7 +254,6 @@
         .item-actions-wrapper { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; gap: 4px; align-items: center; }
         .item-action-mini-btn { background: #fcfcfc; border: 1px solid #eeeeee; width: 25px; height: 25px; border-radius: 8px; font-size: 11px; cursor: pointer; display: flex; justify-content: center; align-items: center; }
         .item-action-mini-btn.delete { color: #ff9e99; border-color: #fff0f0; }
-
         .fab-btn {
             position: absolute;
             bottom: max(15px, env(safe-area-inset-bottom));
@@ -294,7 +274,6 @@
             z-index: 10;
         }
         .fab-btn:active { transform: translateX(-50%) scale(.96); }
-
         .modal-overlay {
             position: absolute;
             inset: 0;
@@ -344,7 +323,6 @@
         .submit-btn { width: 100%; padding: 13px; background: var(--primary-dark); border: none; border-radius: 14px; color: white; font-size: 15px; font-weight: 800; cursor: pointer; }
         .submit-btn:active { transform: scale(.99); }
         .empty-state { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
-
         @media (max-width: 390px) {
             .phone-container { border-radius: 0; height: 100svh; border: 0; max-width: none; }
             body { padding: 0; }
@@ -365,7 +343,6 @@
                 <div class="banner-budget-amount"><span id="dailyRemaining">150.00</span> ฿</div>
             </div>
         </div>
-
         <div class="overall-summary-card">
             <div class="summary-total-row">
                 <div class="summary-box inc">📥 รับรวมเดือนนี้:<br><span id="totalIncomeText">0</span> ฿</div>
@@ -386,9 +363,11 @@
                 <button class="sys-btn" type="button" onclick="triggerRestore()">📥 ดึงคืนข้อมูล</button>
                 <input type="file" id="restoreFileInput" accept=".json,application/json" style="display:none" onchange="restoreData(event)">
             </div>
+            <div class="cat-summary-title">📥 แจกแจงรายรับเดือนนี้</div>
+            <div class="category-summary-grid" id="incomeCategorySummaryGrid"></div>
+            <div class="cat-summary-title">📤 แจกแจงรายจ่ายเดือนนี้</div>
             <div class="category-summary-grid" id="categorySummaryGrid"></div>
         </div>
-
         <div class="app-body">
             <div class="calendar-header">
                 <div class="calendar-title" id="calendarMonthYear">กรกฎาคม 2569</div>
@@ -411,7 +390,6 @@
         </div>
         <button class="fab-btn" id="openModalBtn" type="button" aria-label="เพิ่มรายการ">＋</button>
     </div>
-
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal-content" role="dialog" aria-modal="true">
             <div class="modal-header">
@@ -456,14 +434,12 @@
             <button type="button" class="submit-btn" id="saveTransactionBtn">บันทึกเลย! ✨</button>
         </div>
     </div>
-
     <script>
         const DAILY_BUDGET_LIMIT = 150;
         const STORAGE_DB = 'pukpik_db_v5';
         const STORAGE_OLD_DB = 'pukpik_db_v4';
         const STORAGE_CARDS = 'pukpik_cards';
         const STORAGE_CATEGORIES = 'pukpik_categories';
-
         let currentDate = new Date();
         let selectedDateKey = formatDateKey(new Date());
         let currentType = 'expense';
@@ -472,7 +448,6 @@
         let selectedCategory = '';
         let editingTransactionId = null;
         let editingDateKey = null;
-
         const defaultCreditCards = ['เฟิร์สช้อยส์', 'อิออน M GEN'];
         const defaultCategories = {
             expense: [
@@ -489,36 +464,30 @@
                 { id: 'other_inc', name: 'อื่นๆ', icon: '🪙' }
             ]
         };
-
         let db = loadJSON(STORAGE_DB, null);
         if (!db) db = loadJSON(STORAGE_OLD_DB, {});
         let creditCards = loadJSON(STORAGE_CARDS, defaultCreditCards);
         let customCategories = loadJSON(STORAGE_CATEGORIES, defaultCategories);
-
         const monthNamesThai = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
         const $ = (id) => document.getElementById(id);
         const calendarGrid = $('calendarGrid');
         const weekdaysTemplate = ['อา','จ','อ','พ','พฤ','ศ','ส'];
-
         document.addEventListener('DOMContentLoaded', () => {
             normalizeData();
             initApp();
             setupEventListeners();
         });
-
         function loadJSON(key, fallback) {
             try {
                 const raw = localStorage.getItem(key);
                 return raw ? JSON.parse(raw) : fallback;
             } catch { return fallback; }
         }
-
         function saveAll() {
             localStorage.setItem(STORAGE_DB, JSON.stringify(db));
             localStorage.setItem(STORAGE_CARDS, JSON.stringify(creditCards));
             localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(customCategories));
         }
-
         function normalizeData() {
             if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
             if (!customCategories.income) customCategories.income = defaultCategories.income;
@@ -539,14 +508,12 @@
             });
             saveAll();
         }
-
         function initApp() {
             renderCalendar();
             renderHistory(selectedDateKey);
             updateRealtimeDashboard();
             renderOverallAndCategorySummary();
         }
-
         function setupEventListeners() {
             $('openModalBtn').addEventListener('click', () => {
                 resetForm();
@@ -556,7 +523,6 @@
             $('closeModalBtn').addEventListener('click', closeModal);
             $('modalOverlay').addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') closeModal(); });
             document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
@@ -569,7 +535,6 @@
             });
             $('saveTransactionBtn').addEventListener('click', handleSaveTransaction);
         }
-
         function closeModal() { $('modalOverlay').classList.remove('show'); }
         function escapeHTML(value) {
             return String(value ?? '').replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
@@ -591,7 +556,6 @@
             const d = parseDateKey(dateKey);
             return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth();
         }
-
         function renderWalletButtons() {
             const container = $('walletButtonsContainer');
             container.innerHTML = '';
@@ -612,7 +576,6 @@
                 addWalletButton('💵 เงินสดในมือ', 'cash');
             }
         }
-
         function addWalletButton(label, source, isCredit = false) {
             const btn = document.createElement('button');
             btn.type = 'button';
@@ -621,7 +584,6 @@
             btn.onclick = () => { selectedPaymentSource = source; renderWalletButtons(); };
             $('walletButtonsContainer').appendChild(btn);
         }
-
         function addNewCreditCard() {
             const cardName = prompt('กรอกชื่อบัตรเครดิตใหม่ค๊าบ:');
             const clean = cardName ? cardName.trim() : '';
@@ -633,7 +595,6 @@
             renderWalletButtons();
             renderOverallAndCategorySummary();
         }
-
         function addNewCategory() {
             if (currentType === 'transfer') return;
             const typeText = currentType === 'expense' ? 'รายจ่าย' : 'รายรับ';
@@ -648,13 +609,11 @@
             renderFormCategories();
             renderOverallAndCategorySummary();
         }
-
         function selectTransferDirection(direction) {
             selectedTransferDirection = direction;
             $('transBankToCashBtn').classList.toggle('active', direction === 'bank_to_cash');
             $('transCashToBankBtn').classList.toggle('active', direction === 'cash_to_bank');
         }
-
         function switchFormTypeElements() {
             renderWalletButtons();
             $('walletSelectorZone').style.display = currentType === 'transfer' ? 'none' : 'block';
@@ -662,7 +621,6 @@
             $('categoryZone').style.display = currentType === 'transfer' ? 'none' : 'block';
             $('skipBudgetRow').style.display = currentType === 'expense' ? 'flex' : 'none';
         }
-
         function getDaySummary(dateKey) {
             const list = db[dateKey] || [];
             let income = 0, expense = 0, budgetAffectingExpense = 0;
@@ -677,7 +635,6 @@
             });
             return { income, expense, budgetAffectingExpense, balance: DAILY_BUDGET_LIMIT - budgetAffectingExpense };
         }
-
         function updateRealtimeDashboard() {
             const summary = getDaySummary(formatDateKey(new Date()));
             const remaining = summary.balance;
@@ -700,14 +657,13 @@
                 $('mascotSpeech').innerText = 'พรุ่งนี้เอาใหม่ได้ค๊าบ';
             }
         }
-
         function renderOverallAndCategorySummary() {
             let monthIncome = 0, monthExpense = 0, monthCredit = 0;
             let bankBalance = 0, cashBalance = 0;
-            const catTotals = {};
+            const expenseCatTotals = {};
+            const incomeCatTotals = {};
             const cardBreakdownTotals = {};
             creditCards.forEach(c => cardBreakdownTotals[c] = 0);
-
             Object.keys(db).forEach(dateKey => {
                 const inCurrentMonth = isSameMonthKey(dateKey, currentDate);
                 (db[dateKey] || []).forEach(item => {
@@ -716,7 +672,10 @@
                     if (item.type === 'income') {
                         if (source === 'bank') bankBalance += amount;
                         if (source === 'cash') cashBalance += amount;
-                        if (inCurrentMonth) monthIncome += amount;
+                        if (inCurrentMonth) {
+                            monthIncome += amount;
+                            incomeCatTotals[item.category] = (incomeCatTotals[item.category] || 0) + amount;
+                        }
                     } else if (item.type === 'expense') {
                         if (source.startsWith('credit_')) {
                             const cardName = source.replace('credit_', '');
@@ -730,7 +689,7 @@
                         }
                         if (inCurrentMonth) {
                             monthExpense += amount;
-                            catTotals[item.category] = (catTotals[item.category] || 0) + amount;
+                            expenseCatTotals[item.category] = (expenseCatTotals[item.category] || 0) + amount;
                         }
                     } else if (item.type === 'transfer') {
                         if ((item.transferDirection || 'bank_to_cash') === 'bank_to_cash') {
@@ -741,14 +700,12 @@
                     }
                 });
             });
-
             $('totalIncomeText').innerText = money(monthIncome);
             $('totalExpenseText').innerText = money(monthExpense);
             $('totalBankText').innerText = money(bankBalance, 2);
             $('totalCashText').innerText = money(cashBalance, 2);
             $('totalCombinedText').innerText = money(bankBalance + cashBalance, 2);
             $('totalCreditText').innerText = money(monthCredit, 2);
-
             const creditZone = $('creditCardsBreakdownZone');
             creditZone.innerHTML = '';
             let hasCardRecord = false;
@@ -762,17 +719,33 @@
                 }
             });
             if (!hasCardRecord) creditZone.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:2px 4px">💳 ยังไม่มียอดรูดบัตรในเดือนนี้ค๊าบ</div>';
-
+            const incomeCatZone = $('incomeCategorySummaryGrid');
+            incomeCatZone.innerHTML = '';
+            customCategories.income.forEach(cat => {
+                const amount = incomeCatTotals[cat.id] || 0;
+                if(amount<=0) return;
+                const box = document.createElement('div');
+                box.className='cat-summary-mini-box';
+                box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
+                incomeCatZone.appendChild(box);
+            });
+            if(!incomeCatZone.children.length){
+                incomeCatZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">💰 ยังไม่มีรายการรายรับในเดือนนี้ค๊าบ</div>';
+            }
             const catZone = $('categorySummaryGrid');
             catZone.innerHTML = '';
             customCategories.expense.forEach(cat => {
-                const box = document.createElement('div');
-                box.className = 'cat-summary-mini-box';
-                box.innerHTML = `<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(catTotals[cat.id] || 0)} ฿</strong>`;
+                const amount=expenseCatTotals[cat.id]||0;
+                if(amount<=0) return;
+                const box=document.createElement('div');
+                box.className='cat-summary-mini-box';
+                box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
                 catZone.appendChild(box);
             });
+            if(!catZone.children.length){
+                catZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">📤 ยังไม่มีรายการรายจ่ายในเดือนนี้ค๊าบ</div>';
+            }
         }
-
         function renderCalendar() {
             calendarGrid.innerHTML = weekdaysTemplate.map(w => `<div class="weekday">${w}</div>`).join('');
             const year = currentDate.getFullYear();
@@ -802,7 +775,6 @@
                 calendarGrid.appendChild(cell);
             }
         }
-
         function changeMonth(direction) {
             currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1);
             renderCalendar();
@@ -813,7 +785,6 @@
             selectedDateKey = formatDateKey(new Date());
             initApp();
         }
-
         function renderHistory(dateKey) {
             const items = db[dateKey] || [];
             const summary = getDaySummary(dateKey);
@@ -860,7 +831,6 @@
                 list.appendChild(itemEl);
             });
         }
-
         function renderFormCategories() {
             const grid = $('formCategoryGrid');
             grid.innerHTML = '';
@@ -875,7 +845,6 @@
                 grid.appendChild(el);
             });
         }
-
         function resetForm() {
             editingTransactionId = null;
             editingDateKey = null;
@@ -893,28 +862,23 @@
             selectedCategory = customCategories.expense?.[0]?.id || '';
             renderFormCategories();
         }
-
         function setTypeButtonActive(type) {
             document.querySelectorAll('.type-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
         }
-
         function editTransaction(dateKey, transactionId) {
             const item = (db[dateKey] || []).find(x => Number(x.id) === Number(transactionId));
             if (!item) return alert('ไม่พบรายการนี้แล้วค๊าบ');
-
             editingTransactionId = transactionId;
             editingDateKey = dateKey;
             currentType = item.type || 'expense';
             selectedPaymentSource = item.source || 'bank';
             selectedTransferDirection = item.transferDirection || 'bank_to_cash';
             selectedCategory = item.category || '';
-
             $('amountInput').value = item.amount;
             $('noteInput').value = item.note || '';
             $('skipBudgetCheck').checked = Boolean(item.skipBudget);
             $('modalTitle').innerText = 'แก้ไขรายการปุกปิก ✏️';
             $('saveTransactionBtn').innerText = '💾 บันทึกการแก้ไข';
-
             setTypeButtonActive(currentType);
             selectTransferDirection(selectedTransferDirection);
             switchFormTypeElements();
@@ -922,7 +886,6 @@
             $('modalOverlay').classList.add('show');
             setTimeout(() => $('amountInput').focus(), 120);
         }
-
         function buildTransactionPayload(amount, note, existing = {}) {
             const now = new Date();
             const timeStr = existing.time || `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -938,12 +901,10 @@
                 transferDirection: currentType === 'transfer' ? selectedTransferDirection : ''
             };
         }
-
         function handleSaveTransaction() {
             const amount = Number($('amountInput').value);
             const note = $('noteInput').value.trim();
             if (!Number.isFinite(amount) || amount <= 0) return alert('กรุณากรอกจำนวนเงินให้ถูกต้องน้า 🥺');
-
             if (editingTransactionId !== null && editingDateKey !== null) {
                 const list = db[editingDateKey] || [];
                 const index = list.findIndex(item => Number(item.id) === Number(editingTransactionId));
@@ -957,14 +918,12 @@
                 initApp();
                 return;
             }
-
             if (!db[selectedDateKey]) db[selectedDateKey] = [];
             db[selectedDateKey].push(buildTransactionPayload(amount, note, { id: Date.now() }));
             saveAll();
             closeModal();
             initApp();
         }
-
         function deleteTransaction(dateKey, transactionId) {
             if (!db[dateKey]) return;
             if (!confirm('ต้องการลบรายการนี้ใช่ไหมค๊าบ? 🥺')) return;
@@ -973,7 +932,6 @@
             saveAll();
             initApp();
         }
-
         function backupData() {
             const payload = {
                 app: 'PukPik Pocket',
@@ -995,9 +953,7 @@
             URL.revokeObjectURL(link.href);
             link.remove();
         }
-
         function triggerRestore() { $('restoreFileInput').click(); }
-
         function restoreData(event) {
             const file = event.target.files[0];
             if (!file) return;
