@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>PukPik Pocket v5.3</title>
+    <title>PukPik Pocket v5.4</title>
     <style>
         :root {
             --bg-color: #f7f9fc;
@@ -352,6 +352,8 @@
         .submit-btn { width: 100%; padding: 13px; background: var(--primary-dark); border: none; border-radius: 14px; color: white; font-size: 15px; font-weight: 800; cursor: pointer; }
         .submit-btn:active { transform: scale(.99); }
         .empty-state { text-align: center; padding: 20px; color: var(--text-muted); font-size: 13px; }
+        .wallet-box.excluded { opacity: .62; border-style: dashed; }
+        .wallet-include-note { font-size: 8px; color: var(--text-muted); margin-top: 1px; }
         @media (max-width: 390px) {
             .phone-container { border-radius: 0; height: 100svh; border: 0; max-width: none; }
             body { padding: 0; }
@@ -391,6 +393,7 @@
             <div class="system-action-row">
                 <button class="sys-btn" type="button" onclick="backupData()">📤 สำรองข้อมูล</button>
                 <button class="sys-btn" type="button" onclick="triggerRestore()">📥 ดึงคืนข้อมูล</button>
+                <button class="sys-btn" type="button" onclick="manageWallets()">⚙️ กระเป๋า</button>
                 <input type="file" id="restoreFileInput" accept=".json,application/json" style="display:none" onchange="restoreData(event)">
             </div>
             <div class="cat-summary-title">📥 แจกแจงรายรับเดือนนี้</div>
@@ -449,6 +452,7 @@
                 </div>
                 <div style="text-align: right; margin-top: 4px;">
                     <button class="add-manage-btn" type="button" onclick="addNewCustomWallet()">➕ เพิ่มกระเป๋า/บัญชีใหม่</button>
+                    <button class="add-manage-btn" type="button" onclick="manageWallets()">⚙️ จัดการกระเป๋า</button>
                 </div>
             </div>
             <div class="custom-checkbox-row skip" id="skipBudgetRow">
@@ -480,6 +484,7 @@
         const STORAGE_CARDS = 'pukpik_cards';
         const STORAGE_CATEGORIES = 'pukpik_categories';
         const STORAGE_WALLETS = 'pukpik_wallets';
+        const STORAGE_WALLET_SETTINGS = 'pukpik_wallet_settings';
         let currentDate = new Date();
         let selectedDateKey = formatDateKey(new Date());
         let currentType = 'expense';
@@ -511,6 +516,7 @@
         let creditCards = loadJSON(STORAGE_CARDS, defaultCreditCards);
         let customCategories = loadJSON(STORAGE_CATEGORIES, defaultCategories);
         let customWallets = loadJSON(STORAGE_WALLETS, defaultCustomWallets);
+        let walletSettings = loadJSON(STORAGE_WALLET_SETTINGS, { bank: { includeInTotal: true }, cash: { includeInTotal: true } });
         const monthNamesThai = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
         const $ = (id) => document.getElementById(id);
         const calendarGrid = $('calendarGrid');
@@ -531,12 +537,22 @@
             localStorage.setItem(STORAGE_CARDS, JSON.stringify(creditCards));
             localStorage.setItem(STORAGE_CATEGORIES, JSON.stringify(customCategories));
             localStorage.setItem(STORAGE_WALLETS, JSON.stringify(customWallets));
+            localStorage.setItem(STORAGE_WALLET_SETTINGS, JSON.stringify(walletSettings));
         }
         function normalizeData() {
             if (!customCategories.expense) customCategories.expense = defaultCategories.expense;
             if (!customCategories.income) customCategories.income = defaultCategories.income;
             if (!Array.isArray(creditCards)) creditCards = [...defaultCreditCards];
             if (!Array.isArray(customWallets)) customWallets = [];
+            if (!walletSettings || typeof walletSettings !== 'object' || Array.isArray(walletSettings)) walletSettings = { bank: { includeInTotal: true }, cash: { includeInTotal: true } };
+            if (!walletSettings.bank) walletSettings.bank = { includeInTotal: true };
+            if (!walletSettings.cash) walletSettings.cash = { includeInTotal: true };
+            customWallets = customWallets.map(w => ({
+                id: w.id || Date.now() + Math.random(),
+                name: String(w.name || 'กระเป๋าเสริม'),
+                icon: String(w.icon || '📦').trim().slice(0, 4) || '📦',
+                includeInTotal: w.includeInTotal !== false
+            }));
             Object.keys(db || {}).forEach(dateKey => {
                 if (!Array.isArray(db[dateKey])) {
                     delete db[dateKey];
@@ -618,16 +634,22 @@
             const d = parseDateKey(dateKey);
             return d.getFullYear() === dateObj.getFullYear() && d.getMonth() === dateObj.getMonth();
         }
-        function getWalletName(src) {
-            if (src === 'bank') return '🏦 บัญชี';
-            if (src === 'cash') return '💵 เงินสด';
-            if (String(src).startsWith('credit_')) return `💳 บัตร:${String(src).replace('credit_', '')}`;
-            if (String(src).startsWith('wallet_')) {
-                const wId = String(src).replace('wallet_', '');
+        function getWalletMeta(src) {
+            const key = String(src || '');
+            if (key === 'bank') return { id: 'bank', name: 'บัญชี', icon: '🏦', includeInTotal: walletSettings.bank?.includeInTotal !== false, fixed: true };
+            if (key === 'cash') return { id: 'cash', name: 'เงินสด', icon: '💵', includeInTotal: walletSettings.cash?.includeInTotal !== false, fixed: true };
+            if (key.startsWith('wallet_')) {
+                const wId = key.replace('wallet_', '');
                 const found = customWallets.find(w => String(w.id) === String(wId));
-                return found ? `📦 ${found.name}` : '📦 กระเป๋าเสริม';
+                if (found) return { id: key, name: found.name, icon: found.icon || '📦', includeInTotal: found.includeInTotal !== false, fixed: false, wallet: found };
+                return { id: key, name: 'กระเป๋าเสริมที่ไม่พบ', icon: '📦', includeInTotal: false, fixed: false };
             }
-            return 'กระเป๋า';
+            return { id: key, name: 'กระเป๋า', icon: '📦', includeInTotal: false, fixed: false };
+        }
+        function getWalletName(src) {
+            const meta = getWalletMeta(src);
+            if (String(src || '').startsWith('credit_')) return `💳 บัตร:${String(src).replace('credit_', '')}`;
+            return `${meta.icon} ${meta.name}`;
         }
         function renderWalletButtons() {
             const container = $('walletButtonsContainer');
@@ -636,7 +658,7 @@
                 $('walletZoneLabel').innerText = 'จ่ายด้วยกระเป๋าหรือบัตรเครดิตไหน?';
                 addWalletButton('🏦 บัญชีธนาคาร', 'bank');
                 addWalletButton('💵 เงินสดในมือ', 'cash');
-                customWallets.forEach(w => addWalletButton(`📦 ${w.name}`, `wallet_${w.id}`));
+                customWallets.forEach(w => addWalletButton(`${w.icon || '📦'} ${w.name}`, `wallet_${w.id}`));
                 creditCards.forEach(card => addWalletButton(`💳 ${card}`, `credit_${card}`, true));
                 const addBtn = document.createElement('button');
                 addBtn.type = 'button';
@@ -648,7 +670,7 @@
                 $('walletZoneLabel').innerText = 'รับเงินเข้ากระเป๋าหรือดึงจากบัตรไหน?';
                 addWalletButton('🏦 บัญชีธนาคาร', 'bank');
                 addWalletButton('💵 เงินสดในมือ', 'cash');
-                customWallets.forEach(w => addWalletButton(`📦 ${w.name}`, `wallet_${w.id}`));
+                customWallets.forEach(w => addWalletButton(`${w.icon || '📦'} ${w.name}`, `wallet_${w.id}`));
                 creditCards.forEach(card => addWalletButton(`💳 ${card}`, `credit_${card}`, true));
             }
         }
@@ -668,7 +690,7 @@
             const list = [
                 { id: 'bank', name: '🏦 บัญชี' },
                 { id: 'cash', name: '💵 เงินสด' },
-                ...customWallets.map(w => ({ id: `wallet_${w.id}`, name: `📦 ${w.name}` }))
+                ...customWallets.map(w => ({ id: `wallet_${w.id}`, name: `${w.icon || '📦'} ${w.name}` }))
             ];
             list.forEach(w => {
                 const btnFrom = document.createElement('button');
@@ -703,12 +725,78 @@
             if (clean === 'บัญชี' || clean === 'เงินสด' || customWallets.some(w => w.name === clean)) {
                 return alert('มีชื่อกระเป๋านี้อยู่ในระบบแล้วค๊าบ 😮');
             }
+            const icon = (prompt(`เลือกอิโมจิให้ "${clean}" ค๊าบ เช่น 🏦 💸 🐷 💳`, '📦') || '📦').trim().slice(0, 4) || '📦';
+            const include = confirm(`ให้ "${clean}" ถูกนับในยอดเงินรวมไหมค๊าบ?
+กด OK = รวมยอด / Cancel = ไม่รวมยอด`);
             const newId = Date.now();
-            customWallets.push({ id: newId, name: clean });
+            customWallets.push({ id: newId, name: clean, icon, includeInTotal: include });
             transferToSource = `wallet_${newId}`;
             saveAll();
+            renderWalletButtons();
             renderTransferDirectionWallets();
             renderOverallAndCategorySummary();
+        }
+        function manageWallets() {
+            const walletList = [
+                { key: 'bank', label: `${getWalletMeta('bank').icon} ${getWalletMeta('bank').name}`, type: 'fixed' },
+                { key: 'cash', label: `${getWalletMeta('cash').icon} ${getWalletMeta('cash').name}`, type: 'fixed' },
+                ...customWallets.map(w => ({ key: `wallet_${w.id}`, label: `${w.icon || '📦'} ${w.name}`, type: 'custom', wallet: w }))
+            ];
+            const text = walletList.map((item, i) => {
+                const meta = getWalletMeta(item.key);
+                const status = meta.includeInTotal ? 'รวมยอดรวม' : 'ไม่รวมยอดรวม';
+                return `${i + 1}. ${item.label} (${status})`;
+            }).join('\n');
+            const choice = prompt(`เลือกกระเป๋าที่ต้องการจัดการค๊าบ:
+
+${text}
+
+พิมพ์เลข เช่น 1`);
+            const index = Number(choice) - 1;
+            if (!Number.isInteger(index) || !walletList[index]) return;
+            const selected = walletList[index];
+            const meta = getWalletMeta(selected.key);
+            const actionText = selected.type === 'custom'
+                ? `จัดการ ${selected.label}
+
+1 = แก้ชื่อ/อิโมจิ
+2 = ${meta.includeInTotal ? 'ปิดไม่ให้รวมยอดรวม' : 'เปิดรวมยอดรวม'}
+3 = ลบกระเป๋า`
+                : `จัดการ ${selected.label}
+
+1 = ${meta.includeInTotal ? 'ปิดไม่ให้รวมยอดรวม' : 'เปิดรวมยอดรวม'}`;
+            const action = prompt(actionText);
+
+            if (selected.type === 'fixed') {
+                if (action === '1') {
+                    walletSettings[selected.key].includeInTotal = meta.includeInTotal ? false : true;
+                } else return;
+            } else if (selected.type === 'custom') {
+                const wallet = selected.wallet;
+                if (action === '1') {
+                    const newName = prompt('ชื่อกระเป๋าใหม่:', wallet.name);
+                    const cleanName = newName ? newName.trim() : '';
+                    if (cleanName) wallet.name = cleanName;
+                    const newIcon = prompt('อิโมจิใหม่:', wallet.icon || '📦');
+                    const cleanIcon = newIcon ? newIcon.trim().slice(0, 4) : '';
+                    if (cleanIcon) wallet.icon = cleanIcon;
+                } else if (action === '2') {
+                    wallet.includeInTotal = wallet.includeInTotal === false ? true : false;
+                } else if (action === '3') {
+                    if (!confirm(`ลบกระเป๋า "${wallet.name}" ใช่ไหมค๊าบ?
+รายการเก่าจะยังอยู่ แต่จะแสดงเป็นกระเป๋าเสริมที่ไม่พบ`)) return;
+                    customWallets = customWallets.filter(w => String(w.id) !== String(wallet.id));
+                    if (selectedPaymentSource === selected.key) selectedPaymentSource = 'bank';
+                    if (transferFromSource === selected.key) transferFromSource = 'bank';
+                    if (transferToSource === selected.key) transferToSource = 'cash';
+                } else return;
+            }
+
+            saveAll();
+            renderWalletButtons();
+            renderTransferDirectionWallets();
+            renderOverallAndCategorySummary();
+            renderHistory(selectedDateKey);
         }
         function addNewCategory() {
             if (currentType === 'transfer') return;
@@ -825,17 +913,25 @@
                 });
             });
             const summaryRowZone = $('walletSummaryRowZone');
+            const bankMeta = getWalletMeta('bank');
+            const cashMeta = getWalletMeta('cash');
+            const bankNote = bankMeta.includeInTotal ? '' : '<span class="wallet-include-note">ไม่นับรวม</span>';
+            const cashNote = cashMeta.includeInTotal ? '' : '<span class="wallet-include-note">ไม่นับรวม</span>';
             summaryRowZone.innerHTML = `
-                <div class="wallet-box bank"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val">${money(walletBalances.bank, 2)}</span></div>
-                <div class="wallet-box cash"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val">${money(walletBalances.cash, 2)}</span></div>
+                <div class="wallet-box bank ${bankMeta.includeInTotal ? '' : 'excluded'}" onclick="manageWallets()"><span>🏦 บัญชีคงเหลือ</span><span class="wallet-val">${money(walletBalances.bank, 2)}</span>${bankNote}</div>
+                <div class="wallet-box cash ${cashMeta.includeInTotal ? '' : 'excluded'}" onclick="manageWallets()"><span>💵 เงินสดคงเหลือ</span><span class="wallet-val">${money(walletBalances.cash, 2)}</span>${cashNote}</div>
             `;
-            let combinedTotal = walletBalances.bank + walletBalances.cash;
+            let combinedTotal = 0;
+            if (bankMeta.includeInTotal) combinedTotal += walletBalances.bank;
+            if (cashMeta.includeInTotal) combinedTotal += walletBalances.cash;
             customWallets.forEach(w => {
                 const bal = walletBalances[`wallet_${w.id}`] || 0;
-                combinedTotal += bal;
-                summaryRowZone.innerHTML += `<div class="wallet-box custom-wallet"><span>📦 ${escapeHTML(w.name)}</span><span class="wallet-val">${money(bal, 2)}</span></div>`;
+                const include = w.includeInTotal !== false;
+                if (include) combinedTotal += bal;
+                const note = include ? '' : '<span class="wallet-include-note">ไม่นับรวม</span>';
+                summaryRowZone.innerHTML += `<div class="wallet-box custom-wallet ${include ? '' : 'excluded'}" onclick="manageWallets()"><span>${escapeHTML(w.icon || '📦')} ${escapeHTML(w.name)}</span><span class="wallet-val">${money(bal, 2)}</span>${note}</div>`;
             });
-            summaryRowZone.innerHTML += `<div class="wallet-box total"><span>💰 คงเหลือรวม</span><span class="wallet-val">${money(combinedTotal, 2)}</span></div>`;
+            summaryRowZone.innerHTML += `<div class="wallet-box total" onclick="manageWallets()"><span>💰 คงเหลือรวม ⚙️</span><span class="wallet-val">${money(combinedTotal, 2)}</span></div>`;
             $('totalIncomeText').innerText = money(monthIncome);
             $('totalExpenseText').innerText = money(monthExpense);
             $('totalCreditText').innerText = money(monthCredit, 2);
@@ -1068,12 +1164,13 @@
         function backupData() {
             const payload = {
                 app: 'PukPik Pocket',
-                version: '5.3',
+                version: '5.4',
                 exportedAt: new Date().toISOString(),
                 db,
                 creditCards,
                 customCategories,
                 customWallets,
+                walletSettings,
                 dailyBudgetLimit: DAILY_BUDGET_LIMIT
             };
             const dataBlob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -1101,6 +1198,7 @@
                     db = nextDb;
                     if (Array.isArray(imported.creditCards)) creditCards = imported.creditCards;
                     if (Array.isArray(imported.customWallets)) customWallets = imported.customWallets;
+                    if (imported.walletSettings && typeof imported.walletSettings === 'object') walletSettings = imported.walletSettings;
                     if (imported.customCategories && typeof imported.customCategories === 'object') customCategories = imported.customCategories;
                     normalizeData();
                     initApp();
