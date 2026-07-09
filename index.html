@@ -188,10 +188,10 @@
         }
         .sys-btn:active { transform: scale(.98); background: #f0f0f0; }
         .app-body { flex: 1; overflow-y: auto; padding: 12px 16px 82px; }
-        .calendar-header {position:sticky;top:0;background:#fff;z-index:20;padding-top:8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .calendar-title { font-size: 15px; font-weight: 800; }
         .calendar-btn { background: #fff; border: 1px solid #eee; border-radius: 10px; font-size: 16px; cursor: pointer; padding: 3px 8px; }
-        .calendar-grid {position:sticky;top:44px;background:#fbfbfb;z-index:19;
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
@@ -368,7 +368,8 @@
             <div class="cat-summary-title">📤 แจกแจงรายจ่ายเดือนนี้</div>
             <div class="category-summary-grid" id="categorySummaryGrid"></div>
         </div>
-        <div class="calendar-header">
+        <div class="app-body">
+            <div class="calendar-header">
                 <div class="calendar-title" id="calendarMonthYear">กรกฎาคม 2569</div>
                 <div>
                     <button class="calendar-btn" type="button" onclick="changeMonth(-1)" aria-label="เดือนก่อนหน้า">👈</button>
@@ -379,8 +380,6 @@
             <div class="calendar-grid" id="calendarGrid">
                 <div class="weekday">อา</div><div class="weekday">จ</div><div class="weekday">อ</div><div class="weekday">พ</div><div class="weekday">พฤ</div><div class="weekday">ศ</div><div class="weekday">ส</div>
             </div>
-            
-<div class="app-body">
             <div class="history-section">
                 <div class="section-heading">
                     <span id="historyTitle">รายการวันนี้</span>
@@ -723,19 +722,29 @@
             const incomeCatZone = $('incomeCategorySummaryGrid');
             incomeCatZone.innerHTML = '';
             customCategories.income.forEach(cat => {
+                const amount = incomeCatTotals[cat.id] || 0;
+                if(amount<=0) return;
                 const box = document.createElement('div');
-                box.className = 'cat-summary-mini-box';
-                box.innerHTML = `<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(incomeCatTotals[cat.id] || 0)} ฿</strong>`;
+                box.className='cat-summary-mini-box';
+                box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
                 incomeCatZone.appendChild(box);
             });
+            if(!incomeCatZone.children.length){
+                incomeCatZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">💰 ยังไม่มีรายการรายรับในเดือนนี้ค๊าบ</div>';
+            }
             const catZone = $('categorySummaryGrid');
             catZone.innerHTML = '';
             customCategories.expense.forEach(cat => {
-                const box = document.createElement('div');
-                box.className = 'cat-summary-mini-box';
-                box.innerHTML = `<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(expenseCatTotals[cat.id] || 0)} ฿</strong>`;
+                const amount=expenseCatTotals[cat.id]||0;
+                if(amount<=0) return;
+                const box=document.createElement('div');
+                box.className='cat-summary-mini-box';
+                box.innerHTML=`<span>${escapeHTML(cat.icon)}</span><span>${escapeHTML(cat.name)}:</span><strong>${Math.round(amount)} ฿</strong>`;
                 catZone.appendChild(box);
             });
+            if(!catZone.children.length){
+                catZone.innerHTML='<div style="font-size:11px;color:var(--text-muted)">📤 ยังไม่มีรายการรายจ่ายในเดือนนี้ค๊าบ</div>';
+            }
         }
         function renderCalendar() {
             calendarGrid.innerHTML = weekdaysTemplate.map(w => `<div class="weekday">${w}</div>`).join('');
