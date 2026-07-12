@@ -871,7 +871,7 @@ ${text}
             const incomeCatTotals = {};
             const cardBreakdownTotals = {};
             creditCards.forEach(c => cardBreakdownTotals[c] = 0);
-            Object.keys(db).forEach(dateKey => {
+                        Object.keys(db).forEach(dateKey => {
                 const inCurrentMonth = isSameMonthKey(dateKey, currentDate);
                 (db[dateKey] || []).forEach(item => {
                     const amount = Number(item.amount) || 0;
@@ -882,6 +882,10 @@ ${text}
                             if (inCurrentMonth) {
                                 monthCredit += amount;
                                 cardBreakdownTotals[cardName] = (cardBreakdownTotals[cardName] || 0) + amount;
+                            }
+                            // ✨ แก้ไขจุดนี้: ถ้ารับเงินจากบัตรเครดิต ให้ยอดเงินเด้งเข้าบัญชีธนาคาร (bank) ทันที
+                            if (walletBalances['bank'] !== undefined) {
+                                walletBalances['bank'] += amount;
                             }
                         } else if (walletBalances[source] !== undefined) {
                             walletBalances[source] += amount;
